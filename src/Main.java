@@ -1,11 +1,24 @@
 /*
 Program 3
 CS335
-Partners: Jordan Menchen & Malik Conner
+Partners: Jordan Menchen & Malik Connor
 */
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Main {
-    View v = new View();
+
+    public static void main(String[] args) {
+        View v = new View();
+        v.JMorphView();
+        v.addWindowListener(
+                new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        System.exit(0);
+                    }
+                }
+        );
+    }
 
 }
