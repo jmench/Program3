@@ -1,11 +1,13 @@
 /*
 Program 3
 CS335
-Partners: Jordan Menchen & Malik Connor
+Partners: Jordan Menchen & Malik Conner
 */
 
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
 public class Main {
 
