@@ -3,7 +3,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class ControlPanel extends JPanel{
-    private ArrayList<ControlPoint> CPList = new ArrayList<ControlPoint>();
+
     private ControlPoint CPArray[][] = new ControlPoint[10][10];
     public ControlPanel(Color c){
         setBackground (c);
@@ -40,7 +40,5 @@ public class ControlPanel extends JPanel{
                 }
             }
         }
-
-
     }
 }

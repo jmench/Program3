@@ -35,6 +35,8 @@ public class View extends JFrame {
         setLeft = new JButton("Set Left Image");
         setRight = new JButton("Set Right Image");
 
+
+
         //This allows the user to preview the image morph
         previewMorph = new JButton("Preview Morph");
 
