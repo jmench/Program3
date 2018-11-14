@@ -23,8 +23,8 @@ public class View extends JFrame {
         leftPanel = new ControlPanel(Color.DARK_GRAY);
         rightPanel = new ControlPanel(Color.LIGHT_GRAY);
 
-        leftPanel.setPreferredSize(new Dimension(200, 200));
-        rightPanel.setPreferredSize(new Dimension(200, 200));
+        leftPanel.setPreferredSize(new Dimension(400, 300));
+        rightPanel.setPreferredSize(new Dimension(400, 300));
 
         imagePanel.add(leftPanel);
         imagePanel.add(rightPanel);
@@ -44,7 +44,6 @@ public class View extends JFrame {
         add(imagePanel);
         add(buttonPanel);
 
-       // cpanel.repaint();
         setSize(1000,1000);
         setVisible(true);
     }
