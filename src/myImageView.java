@@ -1,9 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.awt.event.MouseEvent;
-public class myImageView extends JLabel {
+public class myImageView extends JLabel implements MouseListener {
 
     private ControlPoint CPArray[][] = new ControlPoint[10][10];
 
@@ -74,7 +75,6 @@ public class myImageView extends JLabel {
 
                 //Ensures that the dots on the border are not drawn
                 if(i!=0 && j!=0 && i!=9 && j!=9) {
-
                     g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
                 }
             }
@@ -99,7 +99,10 @@ public class myImageView extends JLabel {
                 }
             }
         }
-
-
     }
+    public void mouseClicked(MouseEvent e){};
+    public void mouseEntered(MouseEvent e){};
+    public void mouseExited(MouseEvent e){};
+    public void  mousePressed(MouseEvent e){};
+    public void mouseReleased(MouseEvent e){};
 }

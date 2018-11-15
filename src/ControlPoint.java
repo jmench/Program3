@@ -1,7 +1,7 @@
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class ControlPoint implements MouseListener {
+public class ControlPoint {
     private int PosX, PosY, radius;
     public ControlPoint(int x, int y, int radius){
         this.PosX = x;
@@ -9,11 +9,7 @@ public class ControlPoint implements MouseListener {
         this.radius = radius;
     }
 
-    public void mouseClicked(MouseEvent e){};
-    public void mouseEntered(MouseEvent e){};
-    public void mouseExited(MouseEvent e){};
-    public void  mousePressed(MouseEvent e){};
-    public void mouseReleased(MouseEvent e){};
+
 
     public int getPosX(){
         return PosX;
