@@ -28,13 +28,12 @@ public class View extends JFrame {
         TODO: Try to make myImageView first and then add that to the panel
          */
 
-        startImage = new myImageView(readImage("boats.gif"));
-        endImage = new myImageView(readImage("boats.gif"));
+        startImage = new myImageView(readImage("./src/boat_resized.gif"));
+        endImage = new myImageView(readImage("./src/boat_resized.gif"));
         //startImage.addGrid();
         //endImage.addGrid();
 
-        //leftPanel.setPreferredSize(new Dimension(400, 300));
-        //rightPanel.setPreferredSize(new Dimension(400, 300));
+
 
         //Add individual panels to the image panel
         imagePanel.add(startImage);

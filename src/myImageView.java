@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
-
+import java.awt.event.MouseEvent;
 public class myImageView extends JLabel {
 
     private ControlPoint CPArray[][] = new ControlPoint[10][10];
@@ -66,17 +66,17 @@ public class myImageView extends JLabel {
 
     public void addGrid() {
 
-        /*
-        TODO: Need to take away the dots on the border of the images and the lines that extend
-         */
-
         Graphics g = bim.getGraphics();
         g.setColor(Color.BLACK);
         for(int i=0; i<10; i++){
             for(int j=0; j<10; j++){
                 CPArray[i][j] = new ControlPoint(i * (bim.getWidth() / 9), j * (bim.getHeight() / 9), 5);
-                System.out.println(CPArray[i][j].getPosX() + " " + CPArray[i][j].getPosY());
-                g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
+
+                //Ensures that the dots on the border are not drawn
+                if(i!=0 && j!=0 && i!=9 && j!=9) {
+
+                    g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
+                }
             }
         }
 
