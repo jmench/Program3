@@ -7,6 +7,8 @@ import java.awt.event.MouseEvent;
 public class myImageView extends JLabel {
 
     private static ControlPoint[][] CPArray= new ControlPoint[10][10];
+    private static Polygons[][] polygons = new Polygons[10][10];
+
 
     // instance variable to hold the buffered image
     private BufferedImage bim=null;
@@ -79,9 +81,9 @@ public class myImageView extends JLabel {
             }
         }
 
+        int poly_counter=0;
         for(int i=0; i<10; i++) {
             for (int j = 0; j < 10; j++) {
-
 
                 g.setColor(Color.BLACK);
                 //Draws the diagonal connections between the points
@@ -103,13 +105,22 @@ public class myImageView extends JLabel {
                     g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
                     vertex_x_coord = new int[] {CPArray[i][j].getPosX()-5, CPArray[i][j].getPosX()+7, CPArray[i][j].getPosX()+7, CPArray[i][j].getPosX()-5};
                     vertex_y_coord = new int[] {CPArray[i][j].getPosY()-5, CPArray[i][j].getPosY()-5, CPArray[i][j].getPosY()+7, CPArray[i][j].getPosY()+7};
-                    g.drawPolygon(new Polygon(vertex_x_coord, vertex_y_coord, 4));
-                }
+                    polygons[i][j] = new Polygons(vertex_x_coord, vertex_y_coord, 4);
 
+                    /**
+                     * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
+                     */
+                    g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
+                }
+                poly_counter++;
             }
         }
+
     }
 
+    public static Polygons[][] getPolyArray(){
+        return polygons;
+    }
 
     public static ControlPoint[][] getCPArray(){
         return CPArray;

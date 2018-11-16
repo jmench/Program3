@@ -1,16 +1,22 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class View extends JFrame {
     private JButton setLeft, setRight, previewMorph;
+    private BufferedImage image;
     private JSlider ControlPointSize;
     private JPanel buttonPanel, imagePanel;
     private myImageView startImage, endImage;
     private ControlPoint CPArray[][] = new ControlPoint[10][10];
-    private myImageView MIV; // = new myImageView();
+    private Polygons PolyArray[][] = new Polygons[10][10];
 
 
     public void JMorphView(){
@@ -62,6 +68,8 @@ public class View extends JFrame {
         setVisible(true);
         myImageView MIV = new myImageView();
         CPArray = MIV.getCPArray();
+        PolyArray = MIV.getPolyArray();
+
         System.out.println("Final "+CPArray[3][3].getPosX());
         startImage.addMouseListener(new MouseListener(){
             @Override
@@ -78,11 +86,52 @@ public class View extends JFrame {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println(e.getX() + " "+ e.getY());
+                for(int i=0; i<10; i++) {
+                    for (int j = 0; j < 10; j++) {
+                        /*if() {
+                            System.out.println("Source " + e.getSource());
+                        }*/
+                    }
+                }
             }
         });
 
+        final JFileChooser fc = new JFileChooser(".");
+        setLeft.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed (ActionEvent e) {
+                        int returnVal = fc.showOpenDialog(View.this);
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            File file = fc.getSelectedFile();
+                            try {
+                                image = ImageIO.read(file);
+                            } catch (IOException e1){};
 
+                           startImage.setImage(image);
+                           startImage.showImage();
+                            startImage.addGrid();
+                        }
+                    }
+                }
+        );
+
+        setRight.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed (ActionEvent e) {
+                        int returnVal = fc.showOpenDialog(View.this);
+                        if (returnVal == JFileChooser.APPROVE_OPTION) {
+                            File file = fc.getSelectedFile();
+                            try {
+                                image = ImageIO.read(file);
+
+                            } catch (IOException e1){};
+                            endImage.setImage(image);
+                            endImage.showImage();
+                            endImage.addGrid();
+                        }
+                    }
+                }
+        );
     }
 
     // This method reads an Image object from a file indicated by
@@ -106,6 +155,7 @@ public class View extends JFrame {
         return bim;
 
     }
+
 
 
 }
