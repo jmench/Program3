@@ -12,6 +12,9 @@ public class myImageView extends JLabel {
     private BufferedImage bim=null;
     private BufferedImage filteredbim=null;
 
+    private int vertex_x_coord[];
+    private int vertex_y_coord[];
+
     //  tell the paintcomponent method what to draw
     private boolean showfiltered=false;
 
@@ -98,8 +101,11 @@ public class myImageView extends JLabel {
                 //This draws our dots but ensures that the dots on the border are not drawn
                 if (i != 0 && j != 0 && i != 9 && j != 9) {
                     g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
+                    vertex_x_coord = new int[] {CPArray[i][j].getPosX()-5, CPArray[i][j].getPosX()+7, CPArray[i][j].getPosX()+7, CPArray[i][j].getPosX()-5};
+                    vertex_y_coord = new int[] {CPArray[i][j].getPosY()-5, CPArray[i][j].getPosY()-5, CPArray[i][j].getPosY()+7, CPArray[i][j].getPosY()+7};
+                    g.drawPolygon(new Polygon(vertex_x_coord, vertex_y_coord, 4));
                 }
-                System.out.println(CPArray[i][j].getPosX());
+
             }
         }
     }
