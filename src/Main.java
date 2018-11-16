@@ -1,7 +1,7 @@
 /*
 Program 3
 CS335
-Partners: Jordan Menchen & Malik Connor
+Partners: Jordan Menchen & Malik Conner
 */
 
 import java.awt.*;
