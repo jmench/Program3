@@ -38,8 +38,7 @@ public class View extends JFrame {
 
         startImage = new myImageView(readImage("./src/boat_resized.gif"));
         endImage = new myImageView(readImage("./src/boat_resized.gif"));
-        //startImage.addGrid();
-        //endImage.addGrid();
+
 
 
 
@@ -97,6 +96,8 @@ public class View extends JFrame {
         });
 
         final JFileChooser fc = new JFileChooser(".");
+
+        //This allows us to change the images in their respective panels
         setLeft.addActionListener(
                 new ActionListener() {
                     public void actionPerformed (ActionEvent e) {
@@ -107,8 +108,11 @@ public class View extends JFrame {
                                 image = ImageIO.read(file);
                             } catch (IOException e1){};
 
+                            //Here we display the image in it's panel
                            startImage.setImage(image);
                            startImage.showImage();
+
+                           //The resize and redraw the grid
                             startImage.addGrid();
                         }
                     }
