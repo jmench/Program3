@@ -1,5 +1,3 @@
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class ControlPoint {
     private int PosX, PosY, radius;
@@ -16,6 +14,13 @@ public class ControlPoint {
     }
     public int getPosY(){
         return PosY;
+    }
+
+    public void setPosX(int x){
+        this.PosX = x;
+    }
+    public void setPosY(int y){
+        this.PosY = y;
     }
 
     public int getRadius(){

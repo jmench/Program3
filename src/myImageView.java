@@ -4,9 +4,9 @@ import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.awt.event.MouseEvent;
-public class myImageView extends JLabel implements MouseListener {
+public class myImageView extends JLabel {
 
-    private ControlPoint CPArray[][] = new ControlPoint[10][10];
+    private static ControlPoint[][] CPArray= new ControlPoint[10][10];
 
     // instance variable to hold the buffered image
     private BufferedImage bim=null;
@@ -71,38 +71,42 @@ public class myImageView extends JLabel implements MouseListener {
         g.setColor(Color.BLACK);
         for(int i=0; i<10; i++){
             for(int j=0; j<10; j++){
+                //We first create a 2D array of our control points
                 CPArray[i][j] = new ControlPoint(i * (bim.getWidth() / 9), j * (bim.getHeight() / 9), 5);
-
-                //Ensures that the dots on the border are not drawn
-                if(i!=0 && j!=0 && i!=9 && j!=9) {
-                    g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
-                }
             }
         }
 
-        for(int i=0; i<10; i++){
-            for(int j=0; j<10; j++){
+        for(int i=0; i<10; i++) {
+            for (int j = 0; j < 10; j++) {
 
+
+                g.setColor(Color.BLACK);
                 //Draws the diagonal connections between the points
-                if(i!=9 &&  j!=9){
-                    g.drawLine(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i+1][j+1].getPosX(), CPArray[i+1][j+1].getPosY());
+                if (i != 9 && j != 9) {
+                    g.drawLine(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i + 1][j + 1].getPosX(), CPArray[i + 1][j + 1].getPosY());
                 }
 
                 //Draws the vertical connections between the points
-                if(j!=9){
-                    g.drawLine(CPArray[i][j].getPosX()+2, CPArray[i][j].getPosY(), CPArray[i][j+1].getPosX()+2, CPArray[i][j+1].getPosY());
+                if (j != 9) {
+                    g.drawLine(CPArray[i][j].getPosX() + 2, CPArray[i][j].getPosY(), CPArray[i][j + 1].getPosX() + 2, CPArray[i][j + 1].getPosY());
                 }
 
                 //Draws the horizontal connections between the points
-                if(i!=9){
-                    g.drawLine(CPArray[i][j].getPosX(), CPArray[i][j].getPosY()+2, CPArray[i+1][j].getPosX(), CPArray[i+1][j].getPosY()+2);
+                if (i != 9) {
+                    g.drawLine(CPArray[i][j].getPosX(), CPArray[i][j].getPosY() + 2, CPArray[i + 1][j].getPosX(), CPArray[i + 1][j].getPosY() + 2);
                 }
+                //This draws our dots but ensures that the dots on the border are not drawn
+                if (i != 0 && j != 0 && i != 9 && j != 9) {
+                    g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
+                }
+                System.out.println(CPArray[i][j].getPosX());
             }
         }
     }
-    public void mouseClicked(MouseEvent e){};
-    public void mouseEntered(MouseEvent e){};
-    public void mouseExited(MouseEvent e){};
-    public void  mousePressed(MouseEvent e){};
-    public void mouseReleased(MouseEvent e){};
+
+
+    public static ControlPoint[][] getCPArray(){
+        return CPArray;
+    }
+
 }

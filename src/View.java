@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 public class View extends JFrame {
@@ -7,9 +9,12 @@ public class View extends JFrame {
     private JSlider ControlPointSize;
     private JPanel buttonPanel, imagePanel;
     private myImageView startImage, endImage;
-    private ControlPanel leftPanel, rightPanel;
+    private ControlPoint CPArray[][] = new ControlPoint[10][10];
+    private myImageView MIV; // = new myImageView();
+
 
     public void JMorphView(){
+
 
 
         //This panel is used to hold our buttons
@@ -20,9 +25,6 @@ public class View extends JFrame {
         FlowLayout experimentLayout = new FlowLayout();
         imagePanel.setLayout(experimentLayout);
 
-        //Set the individual panels
-        //leftPanel = new ControlPanel(Color.DARK_GRAY);
-        //rightPanel = new ControlPanel(Color.LIGHT_GRAY);
 
         /*
         TODO: Try to make myImageView first and then add that to the panel
@@ -58,6 +60,29 @@ public class View extends JFrame {
 
         setSize(1000,1000);
         setVisible(true);
+        myImageView MIV = new myImageView();
+        CPArray = MIV.getCPArray();
+        System.out.println("Final "+CPArray[3][3].getPosX());
+        startImage.addMouseListener(new MouseListener(){
+            @Override
+            public void mouseReleased(MouseEvent e) {}
+
+            @Override
+            public void mousePressed(MouseEvent e) {}
+
+            @Override
+            public void mouseExited(MouseEvent e) {}
+
+            @Override
+            public void mouseEntered(MouseEvent e) {}
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println(e.getX() + " "+ e.getY());
+            }
+        });
+
+
     }
 
     // This method reads an Image object from a file indicated by
@@ -79,5 +104,8 @@ public class View extends JFrame {
         Graphics2D big = bim.createGraphics();
         big.drawImage (image, 0, 0, this);
         return bim;
+
     }
+
+
 }
