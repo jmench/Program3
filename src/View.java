@@ -1,10 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +12,10 @@ public class View extends JFrame {
     private JSlider ControlPointSize;
     private JPanel buttonPanel, imagePanel;
     private myImageView startImage, endImage;
-    private ControlPoint CPArray[][] = new ControlPoint[10][10];
+    private ControlPoint CPArray[][];
     private Polygons PolyArray[][] = new Polygons[10][10];
-
+    private boolean isDragging = false;
+    private BufferedImage bim;
 
     public void JMorphView(){
 
@@ -38,9 +36,6 @@ public class View extends JFrame {
 
         startImage = new myImageView(readImage("./src/boat_resized.gif"));
         endImage = new myImageView(readImage("./src/boat_resized.gif"));
-
-
-
 
         //Add individual panels to the image panel
         imagePanel.add(startImage);
@@ -69,31 +64,7 @@ public class View extends JFrame {
         CPArray = MIV.getCPArray();
         PolyArray = MIV.getPolyArray();
 
-        System.out.println("Final "+CPArray[3][3].getPosX());
-        startImage.addMouseListener(new MouseListener(){
-            @Override
-            public void mouseReleased(MouseEvent e) {}
 
-            @Override
-            public void mousePressed(MouseEvent e) {}
-
-            @Override
-            public void mouseExited(MouseEvent e) {}
-
-            @Override
-            public void mouseEntered(MouseEvent e) {}
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                for(int i=0; i<10; i++) {
-                    for (int j = 0; j < 10; j++) {
-                        /*if() {
-                            System.out.println("Source " + e.getSource());
-                        }*/
-                    }
-                }
-            }
-        });
 
         final JFileChooser fc = new JFileChooser(".");
 
@@ -159,6 +130,11 @@ public class View extends JFrame {
         return bim;
 
     }
+
+    public BufferedImage getImage() {
+        return bim;
+    }
+
 
 
 
