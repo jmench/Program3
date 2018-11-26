@@ -42,8 +42,8 @@ public class morphWindow extends JDialog {
 
     }
 
-    //  get a graphics context and show either filtered image or
-    //  regular image
+/** TODO: This needs to properly display the Start Grid in the morph window. A function for transitioning to
+  the End Image grid will be added later*/
     public void paint(Graphics g) {
         super.paint(g);
             for(int i=0; i<gridSize; i++){
