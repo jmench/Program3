@@ -11,10 +11,11 @@ public class View extends JFrame {
     private BufferedImage image;
     private JSlider ControlPointSize;
     private JPanel buttonPanel, imagePanel;
-    private myImageView startImage, endImage;
+    private startImageView startImage;
+    private endImageView  endImage;
     private ControlPoint CPArray[][];
     private Polygons PolyArray[][] = new Polygons[10][10];
-    private boolean isDragging = false;
+    private int gridSize = 10;
     private BufferedImage bim;
 
     public void JMorphView(){
@@ -34,8 +35,10 @@ public class View extends JFrame {
         TODO: Try to make myImageView first and then add that to the panel
          */
 
-        startImage = new myImageView(readImage("./src/boat_resized.gif"));
-        endImage = new myImageView(readImage("./src/boat_resized.gif"));
+        startImage = new startImageView(readImage("./src/boat_resized.gif"));
+        endImage = new endImageView(readImage("./src/boat_resized.gif"));
+
+        startImage.addGrid(gridSize);
 
         //Add individual panels to the image panel
         imagePanel.add(startImage);
@@ -47,26 +50,65 @@ public class View extends JFrame {
         setLeft = new JButton("Set Left Image");
         setRight = new JButton("Set Right Image");
 
-        //This allows the user to preview the image morph
-        previewMorph = new JButton("Preview Morph");
+        JLabel gridRes = new JLabel("Grid Resolution");
+        String[] gridStrings= {"5x5", "10x10", "20x20"};
+        JComboBox gridSizes = new JComboBox(gridStrings);
+        gridSizes.setSelectedIndex(1);
 
+
+                //This allows the user to preview the image morph
+                previewMorph = new JButton("Preview Morph");
+        previewMorph.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                morphWindow gui = new morphWindow(View.this);
+                gui.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Not exit, exit would close
+                gui.setSize(400, 275);
+                gui.setLocationRelativeTo(null);
+                gui.setVisible(true);
+                gui.setResizable(false);
+            }
+        });
         buttonPanel.add(setLeft);
         buttonPanel.add(setRight);
         buttonPanel.add(previewMorph);
+        buttonPanel.add(gridRes);
+        buttonPanel.add(gridSizes);
 
-        //Adds to the
+        //Adds the image and button panels to our JFrame
         add(imagePanel);
         add(buttonPanel);
 
         setSize(1000,1000);
         setVisible(true);
-        myImageView MIV = new myImageView();
+       /* myImageView MIV = new myImageView();
         CPArray = MIV.getCPArray();
-        PolyArray = MIV.getPolyArray();
+        PolyArray = MIV.getPolyArray();*/
+
 
 
 
         final JFileChooser fc = new JFileChooser(".");
+
+        gridSizes.addActionListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            int v=  gridSizes.getSelectedIndex();
+                                            if(v==0){
+                                                gridSize=5;
+                                            }
+                                            else if(v==1){
+                                                gridSize=10;
+                                            }
+                                            else{
+                                                gridSize=20;
+                                            }
+                                            startImage.addGrid(gridSize);
+                                            startImage.repaint();
+                                           // endImage.addGrid(gridSize);
+                                        }
+                                    }
+        );
 
         //This allows us to change the images in their respective panels
         setLeft.addActionListener(
@@ -83,8 +125,9 @@ public class View extends JFrame {
                            startImage.setImage(image);
                            startImage.showImage();
 
-                           //The resize and redraw the grid
-                            startImage.addGrid();
+                           //Then resize and redraw the grid
+                            startImage.addGrid(gridSize);
+
                         }
                     }
                 }

@@ -1,10 +1,14 @@
 import java.awt.*;
 
 public class ControlPoint {
+    //Tracks the location and size of each point
     private int PosX, PosY, radius;
     private ControlPoint CP;
     private Color color;
+    //States if the control point was the last selected point
     private boolean isPrevious = false;
+
+    //States if the control point is the currently selected point
     private boolean isCurrent = false;
     public ControlPoint(int x, int y, int radius){
         this.PosX = x;
@@ -27,8 +31,6 @@ public class ControlPoint {
     public void setCurrent(boolean isCurrent){
         this.isCurrent = isCurrent;
     }
-
-    public void setControlPoint(ControlPoint CP){this.CP = CP;}
 
     public void setColor(Color color){
         this.color = color;

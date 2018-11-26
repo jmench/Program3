@@ -1,12 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.AffineTransform;
 import java.awt.image.*;
 import java.awt.event.MouseEvent;
-public class myImageView extends JLabel {
+public class endImageView extends JLabel {
 
     private static ControlPoint[][] CPArray= new ControlPoint[10][10];
     private static Polygons[][] polygons = new Polygons[10][10];
@@ -25,11 +23,11 @@ public class myImageView extends JLabel {
     private boolean showfiltered=false;
 
     // Default constructor
-    public myImageView() {
+    public endImageView() {
     }
 
     // This constructor stores a buffered image passed in as a parameter
-    public myImageView(BufferedImage img) {
+    public endImageView(BufferedImage img) {
         bim = img;
         filteredbim = new BufferedImage
                 (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -168,12 +166,11 @@ public class myImageView extends JLabel {
      */
     public void addGrid() {
 
-
-
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
                     //We first create a 2D array of our control points
                     CPArray[i][j] = new ControlPoint(i * (bim.getWidth() / 9), j * (bim.getHeight() / 9), 5);
+                    //System.out.println(i*bim.getWidth()/9);
                 }
             }
 
@@ -181,6 +178,8 @@ public class myImageView extends JLabel {
 
             this.addMouseListener(new MouseAdapter() {
 
+                //When the mouse is released, we set the last dragged point
+                //as the "previous point"
                 public void mouseReleased(MouseEvent e){
                     for (int i = 0; i < 10; i++) {
                         for (int j = 0; j < 10; j++) {
@@ -192,6 +191,8 @@ public class myImageView extends JLabel {
                     }
                     isDragged= false;
                 }
+
+                //This determines if we can drag a point
                 public void mousePressed(MouseEvent e) {
                     if(contains(e.getPoint())){
                         isDragged=true;
@@ -206,7 +207,7 @@ public class myImageView extends JLabel {
 
 
             public void mouseDragged(MouseEvent e){
-
+                //Here, we find which point was selected, and animate it as dragging
                 if(isDragged) {
                     for(int i=1; i<polygons.length; i++){
                         for(int j=1; j<polygons.length; j++){
@@ -220,14 +221,12 @@ public class myImageView extends JLabel {
                                     CPArray[i][j].setCurrent(true);
 
                                     redrawGrid = true;
-
-
                                 }
                             }
                         }
                     }
                     repaint();
-                    myImageView.super.revalidate();
+                    endImageView.super.revalidate();
                 }
                 }
 
