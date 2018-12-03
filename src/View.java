@@ -1,5 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -16,6 +18,7 @@ public class View extends JFrame {
     private ControlPoint CPArray[][];
     private Polygons PolyArray[][] = new Polygons[10][10];
     private int gridSize = 10;
+    private JSlider intensity;
     private BufferedImage bim;
 
     public void JMorphView(){
@@ -50,6 +53,15 @@ public class View extends JFrame {
         setLeft = new JButton("Set Left Image");
         setRight = new JButton("Set Right Image");
 
+        intensity = new JSlider(JSlider.HORIZONTAL, 1, 200, 100);
+
+        intensity.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent event) {
+
+                startImage.changeIntensity((float)(intensity.getValue()/100.0));
+            }
+        });
+
         JLabel gridRes = new JLabel("Grid Resolution");
         String[] gridStrings= {"5x5", "10x10", "20x20"};
         JComboBox gridSizes = new JComboBox(gridStrings);
@@ -72,6 +84,7 @@ public class View extends JFrame {
         buttonPanel.add(setLeft);
         buttonPanel.add(setRight);
         buttonPanel.add(previewMorph);
+        buttonPanel.add(intensity);
         buttonPanel.add(gridRes);
         buttonPanel.add(gridSizes);
 
@@ -81,9 +94,7 @@ public class View extends JFrame {
 
         setSize(1000,1000);
         setVisible(true);
-       /* myImageView MIV = new myImageView();
-        CPArray = MIV.getCPArray();
-        PolyArray = MIV.getPolyArray();*/
+
 
 
 
@@ -103,6 +114,7 @@ public class View extends JFrame {
                                             else{
                                                 gridSize=20;
                                             }
+
                                             startImage.addGrid(gridSize);
                                             startImage.repaint();
                                            // endImage.addGrid(gridSize);
@@ -122,11 +134,13 @@ public class View extends JFrame {
                             } catch (IOException e1){};
 
                             //Here we display the image in it's panel
-                           startImage.setImage(image);
+                            startImage.setOrigImage(image);
+                           //startImage.setImage(image);
                            startImage.showImage();
 
                            //Then resize and redraw the grid
                             startImage.addGrid(gridSize);
+
 
                         }
                     }

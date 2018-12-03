@@ -16,6 +16,7 @@ public class startImageView extends JLabel {
 
     // instance variable to hold the buffered image
     private BufferedImage bim=null;
+    private BufferedImage origBim = null;
     private BufferedImage filteredbim=null;
 
     private int vertex_x_coord[];
@@ -30,7 +31,8 @@ public class startImageView extends JLabel {
 
     // This constructor stores a buffered image passed in as a parameter
     public startImageView(BufferedImage img) {
-        bim = img;
+        bim = deepCopy(img);
+        origBim = img;
         filteredbim = new BufferedImage
                 (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
         setPreferredSize(new Dimension(bim.getWidth(), bim.getHeight()));
@@ -43,11 +45,30 @@ public class startImageView extends JLabel {
     //     instance variable
     public void setImage(BufferedImage img) {
         if (img == null) return;
-        bim = img;
-        filteredbim = new BufferedImage
-                (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+
+        //////CHANGE FUNCTION NAME
+        bim = deepCopy(img);
+       // origBim = img;
+        //filteredbim = new BufferedImage
+               // (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
         setPreferredSize(new Dimension(bim.getWidth(), bim.getHeight()));
-        showfiltered=false;
+      //  showfiltered=false;
+        this.repaint();
+    }
+
+    ////////////
+    public void setOrigImage(BufferedImage img) {
+        if (img == null) return;
+
+        //////CHANGE FUNCTION NAME
+        origBim = img;
+        bim = deepCopy(img);
+
+        //filteredbim = new BufferedImage
+        // (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
+        setPreferredSize(new Dimension(bim.getWidth(), bim.getHeight()));
+        //  showfiltered=false;
         this.repaint();
     }
 
@@ -225,23 +246,23 @@ public class startImageView extends JLabel {
                                     if(i!=0 && j!=0 && i!=gridSize-1 && j!=gridSize-1) {
 
                                         //Prevents a dot from horizontally crossing a neighbor's path
-                                        if(CPArray[i][j].getPosX()<CPArray[i-1][j].getPosX()+5
-                                        || CPArray[i][j].getPosX()<CPArray[i-1][j-1].getPosX()+5
-                                        || CPArray[i][j].getPosX()<CPArray[i-1][j+1].getPosX()+5){
+                                        if(CPArray[i][j].getPosX()<CPArray[i-1][j].getPosX()+15
+                                        || CPArray[i][j].getPosX()<CPArray[i-1][j-1].getPosX()+15
+                                        || CPArray[i][j].getPosX()<CPArray[i-1][j+1].getPosX()+15){
                                             CPArray[i][j].setPosX(e.getX()+7);
                                             return;
                                         }
-                                        if(CPArray[i][j].getPosX()>CPArray[i+1][j].getPosX()-5
-                                        || CPArray[i][j].getPosX()>CPArray[i+1][j-1].getPosX()-5
-                                        || CPArray[i][j].getPosX()>CPArray[i+1][j+1].getPosX()-5){
+                                        if(CPArray[i][j].getPosX()>CPArray[i+1][j].getPosX()-15
+                                        || CPArray[i][j].getPosX()>CPArray[i+1][j-1].getPosX()-15
+                                        || CPArray[i][j].getPosX()>CPArray[i+1][j+1].getPosX()-15){
                                             CPArray[i][j].setPosX(e.getX()-7);
                                             return;
                                         }
 
                                         //Prevents a dot from vertically crossing a neighbor's path
-                                        if(CPArray[i][j].getPosY()<CPArray[i][j-1].getPosY()+5
-                                        || CPArray[i][j].getPosY()<CPArray[i-1][j-1].getPosY()+5
-                                        || CPArray[i][j].getPosY()<CPArray[i+1][j-1].getPosY()+5){
+                                        if(CPArray[i][j].getPosY()<CPArray[i][j-1].getPosY()+15
+                                        || CPArray[i][j].getPosY()<CPArray[i-1][j-1].getPosY()+15
+                                        || CPArray[i][j].getPosY()<CPArray[i+1][j-1].getPosY()+15){
                                             CPArray[i][j].setPosY(e.getY()+7);
                                             return;
                                         }
@@ -252,14 +273,18 @@ public class startImageView extends JLabel {
                                             return;
                                         }
 
-                                        /** IN-PROGRESS*/
+                                        /** CURRENTLY WORKS, BUT MAY NEED FURTHER TESTING*/
                                         //Prevents a dot from diagonally crossing a neighbor's path
                                         if(CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+5)+(CPArray[i-1][j].getPosY()-5))/2
                                         || CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+5)+(CPArray[i+1][j].getPosY()-5))/2){
                                             CPArray[i][j].setPosY(e.getY()+7);
                                             return;
                                         }
-
+                                        if(CPArray[i][j].getPosY()>((CPArray[i][j+1].getPosY()-5)+(CPArray[i-1][j].getPosY()+5))/2
+                                        || CPArray[i][j].getPosY()>((CPArray[i][j+1].getPosY()-5)+(CPArray[i+1][j].getPosY()+5))/2){
+                                            CPArray[i][j].setPosY(e.getY()-7);
+                                            return;
+                                        }
 
                                         CPArray[i][j].setPosX(e.getX());
                                         CPArray[i][j].setPosY(e.getY());
@@ -287,6 +312,54 @@ public class startImageView extends JLabel {
     }
 
 
+    /** Changes the Intensity. (IN-PROGRESS)*/
+    public void changeIntensity(float percentage) {
+
+        if (origBim == null) {
+            return;
+        }
+
+        int[] pixel = { 0, 0, 0, 0 };
+        float[] hsbvals = { 0, 0, 0 };
+
+        /*RescaleOp op = new RescaleOp(percentage, 0, null);
+        BufferedImage bufferedImage = op.filter(originalBim, originalBim); */
+
+        // https://stackoverflow.com/questions/46797579/how-can-i-control-the-brightness-of-an-image
+        for ( int i = 0; i < origBim.getHeight(); i++ ) {
+            for ( int j = 0; j < origBim.getWidth(); j++ ) {
+
+                // get the pixel data
+                origBim.getRaster().getPixel( j, i, pixel );
+
+                // converts its data to hsb to change brightness
+                Color.RGBtoHSB( pixel[0], pixel[1], pixel[2], hsbvals );
+
+                // calculates the brightness component.
+                float newBrightness = hsbvals[2] * percentage;
+                if ( newBrightness > 1f ) {
+                    newBrightness = 1f;
+                }
+
+                // create a new color with the new brightness
+                Color c = new Color( Color.HSBtoRGB( hsbvals[0], hsbvals[1], newBrightness ) );
+
+                // set the new pixel
+                bim.getRaster().setPixel( j, i, new int[]{ c.getRed(), c.getGreen(), c.getBlue(), pixel[3] } );
+
+            }
+        }
+
+        setImage(bim);
+    }
+
+    /**PART CHANGING THE COLOR INTENSITY*/
+    static public BufferedImage deepCopy(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
 
 
 
