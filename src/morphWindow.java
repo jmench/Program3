@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
+import java.awt.image.BufferedImage;
 
 
 public class morphWindow extends JDialog {
@@ -20,32 +20,66 @@ public class morphWindow extends JDialog {
     private int vertex_x_coord[];
     private int vertex_y_coord[];
     private startImageGrid SIG = new startImageGrid();
+    private JPanel previewPanel;
+
+    // instance variable to hold the buffered image
+    private BufferedImage bim=null;
+
     //This opens a new window to start our morphing
-    public morphWindow(JFrame frame) {
+    public morphWindow(JFrame frame, BufferedImage img) {
 
         super(frame, "Preview Morph", true);
         setLayout(new FlowLayout());
+        System.out.println(img.getWidth());
+        setImage(img);
+        showImage();
+        previewPanel = new JPanel();
 
         startMorph = new JButton("Start Morph");
         morphingImage = new JPanel();
 
-        grid = new JLabel();
+
         CPArray = SIG.getCPArray();
         polygons = SIG.getPolygons();
         gridSize = SIG.getGridSize();
 
-        add(morphingImage);
-        add(grid);
-        add(startMorph);
-        grid.repaint();
+
+        previewPanel.add(morphingImage);
+        previewPanel.add(startMorph);
+        add(previewPanel);
 
 
+    }
+
+    public void setImage(BufferedImage img) {
+        if (img == null) return;
+
+
+        //////CHANGE FUNCTION NAME
+        bim = img;
+        // origBim = img;
+        //filteredbim = new BufferedImage
+        // (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
+        setPreferredSize(new Dimension(bim.getWidth(), bim.getHeight()));
+        //  showfiltered=false;
+        this.repaint();
+    }
+
+    public void showImage() {
+        if (bim == null) return;
+     //   showfiltered=false;
+        this.repaint();
     }
 
 /** TODO: This needs to properly display the Start Grid in the morph window. A function for transitioning to
   the End Image grid will be added later*/
     public void paint(Graphics g) {
         super.paint(g);
+        g.translate(55,150);
+
+
+        Graphics2D g2 = (Graphics2D) g;
+        g2.drawImage(bim, 0, 0, this);
             for(int i=0; i<gridSize; i++){
                 for(int j=0; j<gridSize; j++){
                     g.setColor(Color.BLACK);

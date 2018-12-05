@@ -9,16 +9,16 @@ import java.io.File;
 import java.io.IOException;
 
 public class View extends JFrame {
-    private JButton setLeft, setRight, previewMorph;
+    private JButton setLeft, setRight, previewMorph, genMorph;
     private BufferedImage image;
     private JSlider ControlPointSize;
-    private JPanel buttonPanel, imagePanel;
+    private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel;
     private startImageView startImage;
     private endImageView  endImage;
     private ControlPoint CPArray[][];
     private Polygons PolyArray[][] = new Polygons[10][10];
     private int gridSize = 10;
-    private JSlider intensity;
+    private JSlider startIntensity, endIntensity;
     private BufferedImage bim;
 
     public void JMorphView(){
@@ -27,6 +27,18 @@ public class View extends JFrame {
 
         //This panel is used to hold our buttons
         buttonPanel = new JPanel();
+
+        //This holds our setLeft and setRight buttons
+        setPanel = new JPanel();
+
+        //This panel is used to hold our morph buttons
+        morphPanel = new JPanel();
+
+        //This holds our sliders
+        sliderPanel = new JPanel();
+
+        //This holds our resolution
+        resPanel = new JPanel();
 
         //Panel for the images
         imagePanel = new JPanel();
@@ -54,12 +66,23 @@ public class View extends JFrame {
         setLeft = new JButton("Set Left Image");
         setRight = new JButton("Set Right Image");
 
-        intensity = new JSlider(JSlider.HORIZONTAL, 1, 200, 100);
+        JLabel startIntLabel = new JLabel("Left Image Intensity:");
+        startIntensity = new JSlider(JSlider.HORIZONTAL, 1, 200, 100);
 
-        intensity.addChangeListener(new ChangeListener() {
+        startIntensity.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent event) {
 
-                startImage.changeIntensity((float)(intensity.getValue()/100.0));
+                startImage.changeIntensity((float)(startIntensity.getValue()/100.0));
+            }
+        });
+
+        JLabel endIntLabel = new JLabel("Right Image Intensity:");
+        endIntensity = new JSlider(JSlider.HORIZONTAL, 1, 200, 100);
+
+        endIntensity.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent event) {
+
+                endImage.changeIntensity((float)(endIntensity.getValue()/100.0));
             }
         });
 
@@ -69,25 +92,45 @@ public class View extends JFrame {
         gridSizes.setSelectedIndex(1);
 
 
-                //This allows the user to preview the image morph
-                previewMorph = new JButton("Preview Morph");
+        //This allows the user to start the morph generation
+        genMorph = new JButton("Generate Morph");
+
+        //This allows the user to preview the image morph
+        previewMorph = new JButton("Preview Morph");
         previewMorph.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                morphWindow gui = new morphWindow(View.this);
+                morphWindow gui = new morphWindow(View.this, startImage.getImage());
                 gui.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Not exit, exit would close
-                gui.setSize(400, 275);
+                gui.setSize(700, 700);
                 gui.setLocationRelativeTo(null);
                 gui.setVisible(true);
                 gui.setResizable(false);
             }
         });
-        buttonPanel.add(setLeft);
-        buttonPanel.add(setRight);
-        buttonPanel.add(previewMorph);
-        buttonPanel.add(intensity);
-        buttonPanel.add(gridRes);
-        buttonPanel.add(gridSizes);
+
+        setPanel.add(setLeft);
+        setPanel.add(setRight);
+
+
+        sliderPanel.add(startIntLabel);
+        sliderPanel.add(startIntensity);
+        sliderPanel.add(endIntLabel);
+        sliderPanel.add(endIntensity);
+
+        resPanel.add(gridRes);
+        resPanel.add(gridSizes);
+
+        morphPanel.add(previewMorph);
+        morphPanel.add(genMorph);
+
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
+
+        buttonPanel.add(setPanel);
+        buttonPanel.add(sliderPanel);
+        buttonPanel.add(resPanel);
+        buttonPanel.add(morphPanel);
+
 
         //Adds the image and button panels to our JFrame
         add(imagePanel);
