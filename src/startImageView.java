@@ -11,6 +11,8 @@ public class startImageView extends JLabel {
     private boolean redrawGrid = true;
     private boolean isDragged = false;
     private int gridSize;
+    //Determines how large the neighbor boundary is depending on the resolution
+    private int boundSpace;
     private startImageGrid SIG = new startImageGrid();
 
 
@@ -129,7 +131,7 @@ public class startImageView extends JLabel {
                          * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
                          */
 
-                        g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
+                       // g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
 
                     }
                 }
@@ -168,7 +170,7 @@ public class startImageView extends JLabel {
                          * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
                          */
 
-                        g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
+                        //g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
                     }
                 }
             }
@@ -235,8 +237,15 @@ public class startImageView extends JLabel {
 
 
             public void mouseDragged(MouseEvent e){
+
                 //Here, we find which point was selected, and animate it as dragging
                 if(isDragged) {
+                    if(gridSize==20){
+                        boundSpace = 4;
+                    }
+                    else{
+                        boundSpace=10;
+                    }
                     for(int i=0; i<gridSize; i++){
                         for(int j=0; j<gridSize; j++){
                             if(polygons[i][j]!=null) {
@@ -246,29 +255,29 @@ public class startImageView extends JLabel {
                                     if(i!=0 && j!=0 && i!=gridSize-1 && j!=gridSize-1) {
 
                                         //Prevents a dot from horizontally crossing a neighbor's path
-                                        if(CPArray[i][j].getPosX()<CPArray[i-1][j].getPosX()+15
-                                        || CPArray[i][j].getPosX()<CPArray[i-1][j-1].getPosX()+15
-                                        || CPArray[i][j].getPosX()<CPArray[i-1][j+1].getPosX()+15){
+                                        if(CPArray[i][j].getPosX()<CPArray[i-1][j].getPosX()+boundSpace
+                                        || CPArray[i][j].getPosX()<CPArray[i-1][j-1].getPosX()+boundSpace
+                                        || CPArray[i][j].getPosX()<CPArray[i-1][j+1].getPosX()+boundSpace){
                                             CPArray[i][j].setPosX(e.getX()+7);
                                             return;
                                         }
-                                        if(CPArray[i][j].getPosX()>CPArray[i+1][j].getPosX()-15
-                                        || CPArray[i][j].getPosX()>CPArray[i+1][j-1].getPosX()-15
-                                        || CPArray[i][j].getPosX()>CPArray[i+1][j+1].getPosX()-15){
+                                        if(CPArray[i][j].getPosX()>CPArray[i+1][j].getPosX()-boundSpace
+                                        || CPArray[i][j].getPosX()>CPArray[i+1][j-1].getPosX()-boundSpace
+                                        || CPArray[i][j].getPosX()>CPArray[i+1][j+1].getPosX()-boundSpace){
                                             CPArray[i][j].setPosX(e.getX()-7);
                                             return;
                                         }
 
                                         //Prevents a dot from vertically crossing a neighbor's path
-                                        if(CPArray[i][j].getPosY()<CPArray[i][j-1].getPosY()+15
-                                        || CPArray[i][j].getPosY()<CPArray[i-1][j-1].getPosY()+15
-                                        || CPArray[i][j].getPosY()<CPArray[i+1][j-1].getPosY()+15){
+                                        if(CPArray[i][j].getPosY()<CPArray[i][j-1].getPosY()+boundSpace
+                                        || CPArray[i][j].getPosY()<CPArray[i-1][j-1].getPosY()+boundSpace
+                                        || CPArray[i][j].getPosY()<CPArray[i+1][j-1].getPosY()+boundSpace){
                                             CPArray[i][j].setPosY(e.getY()+7);
                                             return;
                                         }
-                                        if(CPArray[i][j].getPosY()>CPArray[i][j+1].getPosY()-5
-                                        || CPArray[i][j].getPosY()>CPArray[i-1][j+1].getPosY()-5
-                                        || CPArray[i][j].getPosY()>CPArray[i+1][j+1].getPosY()-5){
+                                        if(CPArray[i][j].getPosY()>CPArray[i][j+1].getPosY()-boundSpace
+                                        || CPArray[i][j].getPosY()>CPArray[i-1][j+1].getPosY()-boundSpace
+                                        || CPArray[i][j].getPosY()>CPArray[i+1][j+1].getPosY()-boundSpace){
                                             CPArray[i][j].setPosY(e.getY()-7);
                                             return;
                                         }

@@ -42,6 +42,7 @@ public class View extends JFrame {
         endImage = new endImageView(readImage("./src/boat_resized.gif"));
 
         startImage.addGrid(gridSize);
+        endImage.addGrid(gridSize);
 
         //Add individual panels to the image panel
         imagePanel.add(startImage);
@@ -117,7 +118,8 @@ public class View extends JFrame {
 
                                             startImage.addGrid(gridSize);
                                             startImage.repaint();
-                                           // endImage.addGrid(gridSize);
+                                            endImage.addGrid(gridSize);
+                                            startImage.repaint();
                                         }
                                     }
         );
@@ -131,6 +133,13 @@ public class View extends JFrame {
                             File file = fc.getSelectedFile();
                             try {
                                 image = ImageIO.read(file);
+                                //If the image dimensions are too large, then we use a resizing function
+                                if(image.getHeight() >400 || image.getWidth()>600){
+                                    double x = 600.0/image.getWidth();
+                                    double y = 400.0/image.getHeight();
+                                    System.out.println("Dimensions: "+x+" "+y);
+                                    image = resize(image,x,y);
+                                }
                             } catch (IOException e1){};
 
                             //Here we display the image in it's panel
@@ -155,16 +164,36 @@ public class View extends JFrame {
                             File file = fc.getSelectedFile();
                             try {
                                 image = ImageIO.read(file);
+                                if(image.getHeight() >400 || image.getWidth()>600){
+                                    double x = 600.0/image.getWidth();
+                                    double y = 400.0/image.getHeight();
+                                    System.out.println("Dimensions: "+x+" "+y);
+                                    image = resize(image,x,y);
+                                }
 
                             } catch (IOException e1){};
                             endImage.setImage(image);
                             endImage.showImage();
-                            endImage.addGrid();
+                            endImage.addGrid(gridSize);
                         }
                     }
                 }
         );
     }
+    //A function used to resize the buffered image
+    //Source: https://stackoverflow.com/questions/9417356/bufferedimage-resize
+    public static BufferedImage resize(BufferedImage img, double newW, double newH) {
+        System.out.println("Rescaled "+newW+" "+newH );
+        Image tmp = img.getScaledInstance((int) (img.getWidth()*newW), (int) (img.getHeight()*newH), Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage((int) (img.getWidth()*newW), (int) (img.getHeight()*newH), BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return dimg;
+    }
+
 
     // This method reads an Image object from a file indicated by
     // the string provided as the parameter.  The image is converted

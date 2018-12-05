@@ -79,7 +79,7 @@ public class morphWindow extends JDialog {
                          * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
                          */
 
-                        g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
+                       // g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
 
                     }
                 }
