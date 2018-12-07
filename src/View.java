@@ -11,8 +11,8 @@ import java.io.IOException;
 public class View extends JFrame {
     private JButton setLeft, setRight, previewMorph, genMorph;
     private BufferedImage image;
-    private JSlider ControlPointSize;
-    private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel;
+    private JSlider speed, fps;
+    private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel, speedPanel;
     private startImageView startImage, morphImage;
     private startImageView endImage;
    // private endImageView  endImage;
@@ -51,6 +51,9 @@ public class View extends JFrame {
 
         //This holds our resolution
         resPanel = new JPanel();
+
+        //This panel holds the sliders for speed and fps
+        speedPanel = new JPanel();
 
         //Panel for the images
         imagePanel = new JPanel();
@@ -99,6 +102,25 @@ public class View extends JFrame {
             public void stateChanged(ChangeEvent event) {
 
                 endImage.changeIntensity((float)(endIntensity.getValue()/100.0));
+            }
+        });
+
+        JLabel speedLabel = new JLabel("Speed: 3");
+        JLabel fpsLabel = new JLabel("Frames Per Second: 20");
+        speed = new JSlider(JSlider.HORIZONTAL, 1, 5, 3);
+        fps = new JSlider(JSlider.HORIZONTAL, 1, 60, 20);
+
+        speed.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                speedLabel.setText("Speed: " + speed.getValue());
+            }
+        });
+
+        fps.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                fpsLabel.setText("Frames Per Second: " + fps.getValue());
             }
         });
 
@@ -186,12 +208,19 @@ public class View extends JFrame {
         stopPreview.setEnabled(false);
         morphPanel.add(genMorph);
 
+        speedPanel.add(speedLabel);
+        speedPanel.add(speed);
+        speedPanel.add(fpsLabel);
+        speedPanel.add(fps);
+
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
 
         buttonPanel.add(setPanel);
         buttonPanel.add(sliderPanel);
         buttonPanel.add(resPanel);
+        buttonPanel.add(speedPanel);
         buttonPanel.add(morphPanel);
+
 
 
         //Adds the image and button panels to our JFrame
