@@ -2,7 +2,7 @@ import java.awt.*;
 
 public class ControlPoint {
     //Tracks the location and size of each point
-    private int PosX, PosY, radius;
+    private int PosX, PosY, radius, previewX, previewY;
     private ControlPoint CP;
     private Color color;
     //States if the control point was the last selected point
@@ -52,6 +52,14 @@ public class ControlPoint {
     }
     public void setPosY(int y){
         this.PosY = y;
+    }
+
+    public void setPreviewX(int x){
+        this.previewX = x;
+    }
+
+    public void setPreviewY(int y){
+        this.previewY =y;
     }
 
     public int getRadius(){

@@ -12,13 +12,12 @@ public class View extends JFrame {
     private JButton setLeft, setRight, previewMorph, genMorph;
     private BufferedImage image;
     private JSlider speed, fps;
+    private JSlider ControlPointSize;
     private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel, speedPanel;
     private startImageView startImage, morphImage;
     private startImageView endImage;
-   // private endImageView  endImage;
-    private startImageGrid SIG; // = new startImageGrid();
-   // private endImageGrid EIG = new endImageGrid();
-    private startImageGrid EIG; // = new startImageGrid();
+    private startImageGrid SIG;
+    private startImageGrid EIG;
 
     private ControlPoint previewArr[][];
     private startImageGrid previewGrid = new startImageGrid();
@@ -51,7 +50,7 @@ public class View extends JFrame {
         //This holds our sliders
         sliderPanel = new JPanel();
 
-        //This holds our resolution and color of the grid
+        //This holds our resolution
         resPanel = new JPanel();
 
         //This panel holds the sliders for speed and fps
@@ -71,8 +70,11 @@ public class View extends JFrame {
         gui = new morphWindow(View.this, startImage.getImage());
         gui.setView(this);
 
-        startImage.addGrid(gridSize, CPColor);
-        endImage.addGrid(gridSize, CPColor);
+        startImage.addGrid(gridSize);
+        endImage.addGrid(gridSize);
+
+        startImage.changeColor(Color.BLACK);
+        endImage.changeColor(Color.BLACK);
 
         SIG = startImage.getStartGrid();
         EIG = endImage.getStartGrid();
@@ -109,7 +111,7 @@ public class View extends JFrame {
             }
         });
 
-        JLabel speedLabel = new JLabel("Speed: 3");
+        JLabel speedLabel = new JLabel("Seconds: 3");
         JLabel fpsLabel = new JLabel("Frames Per Second: 20");
         speed = new JSlider(JSlider.HORIZONTAL, 1, 5, 3);
         fps = new JSlider(JSlider.HORIZONTAL, 1, 60, 20);
@@ -117,7 +119,7 @@ public class View extends JFrame {
         speed.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                speedLabel.setText("Speed: " + speed.getValue());
+                speedLabel.setText("Seconds: " + speed.getValue());
             }
         });
 
@@ -132,6 +134,7 @@ public class View extends JFrame {
         String[] gridStrings= {"5x5", "10x10", "20x20"};
         JComboBox gridSizes = new JComboBox(gridStrings);
         gridSizes.setSelectedIndex(1);
+
 
         JLabel gridCol = new JLabel("Grid Color");
         String[] gridcols = {"Black", "Blue", "Green", "White"};
@@ -233,7 +236,6 @@ public class View extends JFrame {
         buttonPanel.add(morphPanel);
 
 
-
         //Adds the image and button panels to our JFrame
         add(imagePanel);
         add(buttonPanel);
@@ -248,25 +250,25 @@ public class View extends JFrame {
         final JFileChooser fc = new JFileChooser(".");
 
         gridSizes.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int v=  gridSizes.getSelectedIndex();
-                if(v==0){
-                    gridSize=5;
-                }
-                else if(v==1){
-                    gridSize=10;
-                }
-                else{
-                    gridSize=20;
-                }
-
-                startImage.addGrid(gridSize, CPColor);
-                startImage.repaint();
-                endImage.addGrid(gridSize, CPColor);
-                endImage.repaint();
-            }
-        });
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+                                            int v=  gridSizes.getSelectedIndex();
+                                            if(v==0){
+                                                gridSize=5;
+                                            }
+                                            else if(v==1){
+                                                gridSize=10;
+                                            }
+                                            else{
+                                                gridSize=20;
+                                            }
+                                            startImage.addGrid(gridSize);
+                                            startImage.repaint();
+                                            endImage.addGrid(gridSize);
+                                            endImage.repaint();
+                                        }
+                                    }
+        );
 
         colors.addActionListener(new ActionListener() {
             @Override
@@ -285,9 +287,10 @@ public class View extends JFrame {
                     CPColor=Color.WHITE;
                 }
 
-                startImage.addGrid(gridSize, CPColor);
+                startImage.changeColor(CPColor);
+                endImage.changeColor(CPColor);
+
                 startImage.repaint();
-                endImage.addGrid(gridSize, CPColor);
                 endImage.repaint();
             }
         });
@@ -305,7 +308,6 @@ public class View extends JFrame {
                                 if(image.getHeight() >400 || image.getWidth()>600){
                                     double x = 600.0/image.getWidth();
                                     double y = 400.0/image.getHeight();
-                                    System.out.println("Dimensions: "+x+" "+y);
                                     image = resize(image,x,y);
                                 }
                             } catch (IOException e1){};
@@ -316,7 +318,7 @@ public class View extends JFrame {
                            startImage.showImage();
 
                            //Then resize and redraw the grid
-                            startImage.addGrid(gridSize, CPColor);
+                            startImage.addGrid(gridSize);
 
                             gui.setImage(image);
                         }
@@ -335,14 +337,13 @@ public class View extends JFrame {
                                 if(image.getHeight() >400 || image.getWidth()>600){
                                     double x = 600.0/image.getWidth();
                                     double y = 400.0/image.getHeight();
-                                    System.out.println("Dimensions: "+x+" "+y);
                                     image = resize(image,x,y);
                                 }
 
                             } catch (IOException e1){};
                             endImage.setOrigImage(image);
                             endImage.showImage();
-                            endImage.addGrid(gridSize, CPColor);
+                            endImage.addGrid(gridSize);
                         }
                     }
                 }
@@ -396,11 +397,12 @@ public class View extends JFrame {
     public void startMorph(int fps, int frames){
         startImageGrid start = SIG;
         previewGrid = SIG;
+        morphImage.setCPArray(SIG.getCPArray());
         startImageGrid end = EIG;
 
 
-        for(int x=1; x<9; x++){
-            for(int y=0; y<9; y++){
+        for(int x=0; x<gridSize; x++){
+            for(int y=0; y<gridSize; y++){
                 double x1 = previewGrid.getCPArray()[x][y].getPosX();
                 double y1= previewGrid.getCPArray()[x][y].getPosY();
                 double x2 = end.getCPArray()[x][y].getPosX();
@@ -408,11 +410,14 @@ public class View extends JFrame {
 
                 double i = ((fps*((x2-x1)/frames)))+x1;
                 double j = ((fps*(y2-y1)/frames))+y1;
+                morphImage.getCPArray()[x][y].setPosX((int)i);
+                morphImage.getCPArray()[x][y].setPosY((int)j);
             }
         }
 
-        for(int x=0; x<9; x++){
-            for(int y=0; y<9; y++){
+        for(int x=0; x<gridSize-1; x++){
+            for(int y=0; y<gridSize-1; y++){
+
 
                 int sx1 = start.getCPArray()[x][y].getPosX();
                 int sy1 = start.getCPArray()[x][y].getPosY();
@@ -433,8 +438,7 @@ public class View extends JFrame {
                 int dy4 = previewGrid.getCPArray()[x+1][y+1].getPosY();
 
 
-                if (((x == 9) && (y == 1))
-                        || ((x == 1) && (y == 9))) {
+                if (((x == gridSize-1) && (y == 1)) || ((x == 1) && (y == gridSize-1))) {
 
                     Triangle S = new Triangle(sx1, sy1, sx2, sy2, sx4, sy4);
                     Triangle D = new Triangle(dx1, dy1, dx2, dy2, dx4, dy4);
@@ -443,10 +447,9 @@ public class View extends JFrame {
                     S = new Triangle(sx2, sy2, sx3, sy3, sx4, sy4);
                     D = new Triangle(dx2, dy2, dx3, dy3, dx4, dy4);
                     MT.warpTriangle(startImage.getImage(), morphImage.getImage(), S, D, null, null);
-
                 }
-                else {
 
+                else {
                     Triangle S = new Triangle(sx1, sy1, sx2, sy2, sx3, sy3);
                     Triangle D = new Triangle(dx1, dy1, dx2, dy2, dx3, dy3);
                     MT.warpTriangle(startImage.getImage(), morphImage.getImage(), S, D, null, null);
@@ -476,6 +479,13 @@ public class View extends JFrame {
 
         g2.setComposite(AlphaComposite.SrcOver.derive((float) fps / frames));
         g2.drawImage(endFrame, 0, 0, this);
+
+        File outputFile = new File("./MorphResults/Frame" + fps + ".jpg");
+        try {
+            ImageIO.write(finalImage, "jpg", outputFile);
+        } catch (IOException e) {
+            System.out.println("Error Saving Morph Frame");
+        }
 
         morphImage.setImage(finalImage);
         gui.setImage(finalImage);
@@ -515,6 +525,15 @@ public class View extends JFrame {
         gui.repaint();
         CTR.stopTimer();
     }
+
+    public int getSeconds(){
+        return speed.getValue();
+    }
+
+    public int getFPS(){
+        return fps.getValue();
+    }
+
 
     private startImageView copyMorphImage(startImageView image) {
         /**CHANGE THIS AND MAKE IT MORE DYNAMIC */////

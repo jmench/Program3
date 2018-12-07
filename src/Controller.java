@@ -5,7 +5,8 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
 public class Controller  {
-    private int frames =10;
+    private int frameCtr =0;
+    private int seconds =0;
     private int fps =0;
     private int time = 0;
     private Timer timer;
@@ -14,16 +15,17 @@ public class Controller  {
     private  ControlPoint[][] morphCPArr;
     private  ControlPoint[][] origArr;
     private startImageView SV;
-    private boolean flag =false;
+    private boolean runMorph =false;
 
 
     public Controller(){
 
 
         JButton stopPreview = new JButton("Stop Preview");
-            //view  = new View()
             fps=0;
             time=0;
+
+
 
 
         /**The value was originally left at '1' (instead of 1000), so
@@ -31,22 +33,23 @@ public class Controller  {
          */
         timer = new Timer(1, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-                if(time% (1000/frames)==0){
+                frameCtr = view.getFPS();
+                seconds = view.getSeconds();
+                if(time% (1000/frameCtr)==0){
                     fps++;
 
-                    /**NEEDS TO BE frames*seconds
-                     * ALSO: CHANGE THE FOR LOOP SIZES TO THE CORRECT MEASUREMENTS */
-                   view.showMorph(fps, frames);
+                    view.startMorph(fps, frameCtr);
+
+                   view.showMorph(fps, seconds*frameCtr);
                     redraw();
-                  //  view.startMorph(fps, frames);
+
                 }
 
-                if(fps== frames*3){
+                if(fps== seconds*frameCtr){
                     timer.stop();
                 }
 
-              //  System.out.println("Time "+time);
+
               /*  if(flag){
                     origGridRedraw();
                 }
@@ -65,6 +68,7 @@ public class Controller  {
             public void actionPerformed(ActionEvent e) {
                 timer.stop();
                 time =0;
+                runMorph=false;
             }});
 
 
@@ -81,11 +85,12 @@ public class Controller  {
 
     public void startTimer(){
         timer.start();
+        runMorph=true;
     }
 
     public void redraw(){
-        for(int i=1; i<9; i++){
-            for(int j=1; j<9; j++){
+        for(int i=1; i<SV.getGridSize(); i++){
+            for(int j=1; j<SV.getGridSize(); j++){
                 int dx,dy;
                 int x1 = morphCPArr[i][j].getPosX();
                 int x2 = endCPArr[i][j].getPosX();
@@ -94,9 +99,9 @@ public class Controller  {
                 if(x1!=x2 && y1!=y2){
                     dx = x1 +(10*(x2-x1)/40);
                     dy = y1 + (10*(y2-y1)/40);
-                    System.out.println(dx +" "+dy);
-                    System.out.println(x1 +" "+x2+ " "+y1+" "+y2);
-                    this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
+                   // this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
+                    this.morphCPArr[i][j].setPreviewX(dx);
+                    this.morphCPArr[i][j].setPreviewY(dy);
                 }
                 SV.repaint();
 
@@ -106,8 +111,8 @@ public class Controller  {
     }
 
     public void origGridRedraw(){
-        for(int i=1; i<9; i++){
-            for(int j=1; j<9; j++){
+        for(int i=1; i<SV.getGridSize(); i++){
+            for(int j=1; j<SV.getGridSize(); j++){
                 int dx,dy;
                 int x1 = morphCPArr[i][j].getPosX();
                 int x2 = origArr[i][j].getPosX();
@@ -116,14 +121,11 @@ public class Controller  {
                 if(x1!=x2 && y1!=y2){
                     dx = x1 +(10*(x2-x1)/40);
                     dy = y1 + (10*(y2-y1)/40);
-                    System.out.println(dx +" "+dy);
-                    System.out.println(x1 +" "+x2+ " "+y1+" "+y2);
                     this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
                 }
             }
         }
 
-        flag =true;
     }
 
     public void setView(View view){
@@ -132,6 +134,7 @@ public class Controller  {
 
     public void stopTimer(){
         timer.stop();
+        runMorph=false;
         time=0;
         fps=0;
     }

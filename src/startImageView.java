@@ -15,6 +15,7 @@ public class startImageView extends JLabel {
     private int boundSpace;
     private startImageGrid SIG = new startImageGrid();
     private Controller CTR;
+    private Color color;
 
 
     // instance variable to hold the buffered image
@@ -28,7 +29,6 @@ public class startImageView extends JLabel {
     //  tell the paintcomponent method what to draw
     private boolean showfiltered=false;
 
-    private Color gridColor;
 
     // Default constructor
     //public startImageView() {
@@ -102,7 +102,7 @@ public class startImageView extends JLabel {
         if(redrawGrid){
             for(int i=0; i<gridSize; i++){
                 for(int j=0; j<gridSize; j++){
-                    g.setColor(gridColor);
+                    g.setColor(color);
                     //Draws the diagonal connections between the points
                     if (i != gridSize-1 && j != gridSize-1) {
                         g.drawLine(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i + 1][j + 1].getPosX(), CPArray[i + 1][j + 1].getPosY());
@@ -122,18 +122,13 @@ public class startImageView extends JLabel {
                             g.setColor(Color.RED);
                         }
                         else{
-                            g.setColor(gridColor);
+                            g.setColor(color);
                         }
                         g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
                         vertex_x_coord = new int[]{CPArray[i][j].getPosX() - 5, CPArray[i][j].getPosX() + 7, CPArray[i][j].getPosX() + 7, CPArray[i][j].getPosX() - 5};
                         vertex_y_coord = new int[]{CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() + 7, CPArray[i][j].getPosY() + 7};
                         polygons[i][j] = new Polygons(vertex_x_coord, vertex_y_coord, 4);
 
-                        /**
-                         * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
-                         */
-
-                       // g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
 
                     }
                 }
@@ -145,7 +140,7 @@ public class startImageView extends JLabel {
             for (int i = 0; i < gridSize; i++) {
                 for (int j = 0; j < gridSize; j++) {
 
-                    g.setColor(gridColor);
+                    g.setColor(color);
 
                     //Draws the diagonal connections between the points
                     if (i != gridSize-1 && j != gridSize-1) {
@@ -181,12 +176,14 @@ public class startImageView extends JLabel {
 
 
 
+    public void changeColor(Color color){
+        this.color = color;
+    }
 
     /**
      * TODO: Add a gridsize parameter for when we want to change the gridsize
      */
-    public void addGrid(int gridSize, Color color) {
-        gridColor = color;
+    public void addGrid(int gridSize) {
         this.gridSize = gridSize;
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
@@ -292,6 +289,7 @@ public class startImageView extends JLabel {
                                             return;
                                         }
 
+
                                         CPArray[i][j].setPosX(e.getX());
                                         CPArray[i][j].setPosY(e.getY());
                                         CPArray[i][j].setColor(Color.RED);
@@ -305,6 +303,10 @@ public class startImageView extends JLabel {
 
 
                                     }
+                                }
+                                else{
+                                    CPArray[i][j].setColor(color);
+                                    CPArray[i][j].setCurrent(false);
                                 }
                             }
                         }

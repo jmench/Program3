@@ -49,14 +49,6 @@ public class morphWindow extends JDialog {
 
         morphingImage = new JPanel();
 
-/*
-        startArr = SIG.getCPArray();
-        polygons = SIG.getPolygons();
-        gridSize = SIG.getGridSize();
-
-        endArr = EIG.getCPArray();*/
-
-
         previewPanel.add(morphingImage);
 
         add(previewPanel);
@@ -65,7 +57,6 @@ public class morphWindow extends JDialog {
         {
             public void windowClosing(WindowEvent e)
             {
-                System.out.println("Resetting");
                 view.resetFinalImage();
 
             }
