@@ -24,6 +24,7 @@ public class View extends JFrame {
     private startImageGrid previewGrid = new startImageGrid();
 
     private int gridSize = 10;
+    private Color CPColor = Color.BLACK;
     private JSlider startIntensity, endIntensity;
     private BufferedImage bim;
     private Controller CTR;
@@ -72,8 +73,8 @@ public class View extends JFrame {
 
         gui = new morphWindow(View.this, startImage.getImage());
 
-        startImage.addGrid(gridSize);
-        endImage.addGrid(gridSize);
+        startImage.addGrid(gridSize, CPColor);
+        endImage.addGrid(gridSize, CPColor);
 
         //Add individual panels to the image panel
         imagePanel.add(startImage);
@@ -130,7 +131,7 @@ public class View extends JFrame {
         gridSizes.setSelectedIndex(1);
 
         JLabel gridCol = new JLabel("Grid Color");
-        String[] gridcols = {"Black, Blue, Green, White"};
+        String[] gridcols = {"Black", "Blue", "Green", "White"};
         JComboBox colors = new JComboBox(gridcols);
         colors.setSelectedIndex(0);
 
@@ -244,26 +245,49 @@ public class View extends JFrame {
         final JFileChooser fc = new JFileChooser(".");
 
         gridSizes.addActionListener(new ActionListener() {
-                                        @Override
-                                        public void actionPerformed(ActionEvent e) {
-                                            int v=  gridSizes.getSelectedIndex();
-                                            if(v==0){
-                                                gridSize=5;
-                                            }
-                                            else if(v==1){
-                                                gridSize=10;
-                                            }
-                                            else{
-                                                gridSize=20;
-                                            }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int v=  gridSizes.getSelectedIndex();
+                if(v==0){
+                    gridSize=5;
+                }
+                else if(v==1){
+                    gridSize=10;
+                }
+                else{
+                    gridSize=20;
+                }
 
-                                            startImage.addGrid(gridSize);
-                                            startImage.repaint();
-                                            endImage.addGrid(gridSize);
-                                            endImage.repaint();
-                                        }
-                                    }
-        );
+                startImage.addGrid(gridSize, CPColor);
+                startImage.repaint();
+                endImage.addGrid(gridSize, CPColor);
+                endImage.repaint();
+            }
+        });
+
+        colors.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int v= colors.getSelectedIndex();
+                if(v==0){
+                    CPColor=Color.BLACK;
+                }
+                else if(v==1){
+                    CPColor=Color.BLUE;
+                }
+                else if (v==2){
+                    CPColor=Color.GREEN;
+                }
+                else {
+                    CPColor=Color.WHITE;
+                }
+
+                startImage.addGrid(gridSize, CPColor);
+                startImage.repaint();
+                endImage.addGrid(gridSize, CPColor);
+                endImage.repaint();
+            }
+        });
 
         //This allows us to change the images in their respective panels
         setLeft.addActionListener(
@@ -289,7 +313,7 @@ public class View extends JFrame {
                            startImage.showImage();
 
                            //Then resize and redraw the grid
-                            startImage.addGrid(gridSize);
+                            startImage.addGrid(gridSize, CPColor);
 
                             gui.setImage(image);
                         }
@@ -315,7 +339,7 @@ public class View extends JFrame {
                             } catch (IOException e1){};
                             endImage.setImage(image);
                             endImage.showImage();
-                            endImage.addGrid(gridSize);
+                            endImage.addGrid(gridSize, CPColor);
                         }
                     }
                 }
