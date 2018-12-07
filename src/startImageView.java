@@ -6,15 +6,14 @@ import java.awt.image.*;
 import java.awt.event.MouseEvent;
 public class startImageView extends JLabel {
 
-    private static ControlPoint[][] CPArray= new ControlPoint[20][20];
-    private static Polygons[][] polygons = new Polygons[20][20];
+    private ControlPoint[][] CPArray= new ControlPoint[20][20];
+    private  Polygons[][] polygons = new Polygons[20][20];
     private boolean redrawGrid = true;
     private boolean isDragged = false;
     private int gridSize;
     //Determines how large the neighbor boundary is depending on the resolution
     private int boundSpace;
     private startImageGrid SIG = new startImageGrid();
-    private Controller CTR;
 
 
     // instance variable to hold the buffered image
@@ -29,8 +28,8 @@ public class startImageView extends JLabel {
     private boolean showfiltered=false;
 
     // Default constructor
-    public startImageView() {
-    }
+    //public startImageView() {
+    //}
 
     // This constructor stores a buffered image passed in as a parameter
     public startImageView(BufferedImage img) {
@@ -166,11 +165,6 @@ public class startImageView extends JLabel {
                         vertex_y_coord = new int[]{CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() + 7, CPArray[i][j].getPosY() + 7};
                         polygons[i][j] = new Polygons(vertex_x_coord, vertex_y_coord, 4);
 
-                        /**
-                         * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
-                         */
-
-                        //g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
                     }
                 }
             }
@@ -185,9 +179,7 @@ public class startImageView extends JLabel {
 
 
 
-    /**
-     * TODO: Add a gridsize parameter for when we want to change the gridsize
-     */
+
     public void addGrid(int gridSize) {
 
 
@@ -380,6 +372,10 @@ public class startImageView extends JLabel {
     public void setCPArray(ControlPoint[][] CPArray){
         this.CPArray = CPArray;
 
+    }
+
+    public startImageGrid getStartGrid(){
+        return SIG;
     }
 
     public Polygons[][] getPolygons(){

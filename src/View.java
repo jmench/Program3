@@ -16,9 +16,9 @@ public class View extends JFrame {
     private startImageView startImage, morphImage;
     private startImageView endImage;
    // private endImageView  endImage;
-    private startImageGrid SIG = new startImageGrid();
+    private startImageGrid SIG; // = new startImageGrid();
    // private endImageGrid EIG = new endImageGrid();
-    private startImageGrid EIG = new startImageGrid();
+    private startImageGrid EIG; // = new startImageGrid();
 
     private ControlPoint previewArr[][];
     private startImageGrid previewGrid = new startImageGrid();
@@ -30,6 +30,7 @@ public class View extends JFrame {
     private MorphTools MT =new MorphTools();
     public BufferedImage startFrames[];
     public BufferedImage endFrames[];
+    public BufferedImage finalImage;
 
     public morphWindow gui;
 
@@ -58,19 +59,21 @@ public class View extends JFrame {
         imagePanel.setLayout(experimentLayout);
 
 
-        /*
-        TODO: Try to make myImageView first and then add that to the panel
-         */
-
         startImage = new startImageView(readImage("./src/boat_resized.gif"));
         endImage = new startImageView(readImage("./src/lion.jpg"));
        //// endImage = new endImageView(readImage("./src/boat_resized.gif"));
         morphImage = new startImageView(readImage("./src/boat_resized.gif"));
 
         gui = new morphWindow(View.this, startImage.getImage());
+        gui.setView(this);
 
         startImage.addGrid(gridSize);
         endImage.addGrid(gridSize);
+
+        SIG = startImage.getStartGrid();
+        EIG = endImage.getStartGrid();
+
+        startImage.getCPArray();
 
         //Add individual panels to the image panel
         imagePanel.add(startImage);
@@ -123,7 +126,7 @@ public class View extends JFrame {
         previewMorph.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), View.this);
+                CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), startImage);
                 CTR.startTimer();
                 previewMorph.setEnabled(false);
                 stopPreview.setEnabled(true);
@@ -157,7 +160,7 @@ public class View extends JFrame {
                                public void actionPerformed(ActionEvent e) {
 
                                    morph();
-                                   CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), View.this);
+                                   CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), startImage);
                                    CTR.startTimer();
                                   // morphWindow gui = new morphWindow(View.this, startImage.getImage());
                                    gui.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Not exit, exit would close
@@ -249,7 +252,7 @@ public class View extends JFrame {
 
                             //Here we display the image in it's panel
                             startImage.setOrigImage(image);
-                           //startImage.setImage(image);
+
                            startImage.showImage();
 
                            //Then resize and redraw the grid
@@ -277,7 +280,7 @@ public class View extends JFrame {
                                 }
 
                             } catch (IOException e1){};
-                            endImage.setImage(image);
+                            endImage.setOrigImage(image);
                             endImage.showImage();
                             endImage.addGrid(gridSize);
                         }
@@ -334,7 +337,6 @@ public class View extends JFrame {
         startImageGrid start = SIG;
         previewGrid = SIG;
         startImageGrid end = EIG;
-        //endImageGrid end =EIG;
 
 
         for(int x=1; x<9; x++){
@@ -345,7 +347,7 @@ public class View extends JFrame {
                 double y2 = end.getCPArray()[x][y].getPosY();
 
                 double i = ((fps*((x2-x1)/frames)))+x1;
-                double j = ((fps*(x2-x1)/frames))+y1;
+                double j = ((fps*(y2-y1)/frames))+y1;
             }
         }
 
@@ -403,7 +405,7 @@ public class View extends JFrame {
        BufferedImage endFrame = endImage.getImage();
          //startFrame = startFrames[frames-1];
          //endFrame = endFrames[frames - fps];
-        BufferedImage finalImage = new BufferedImage(startFrame.getWidth(), startFrame.getHeight(), BufferedImage.TYPE_INT_RGB);
+        finalImage = new BufferedImage(startFrame.getWidth(), startFrame.getHeight(), BufferedImage.TYPE_INT_RGB);
 
 
         Graphics g = finalImage.getGraphics();
@@ -444,9 +446,15 @@ public class View extends JFrame {
 
         }
 
-
     }
 
+    public void resetFinalImage(){
+        finalImage = new BufferedImage(startImage.getWidth(), startImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        morphImage.setImage(finalImage);
+        gui.setImage(finalImage);
+        gui.repaint();
+        CTR.stopTimer();
+    }
 
     private startImageView copyMorphImage(startImageView image) {
         /**CHANGE THIS AND MAKE IT MORE DYNAMIC */////

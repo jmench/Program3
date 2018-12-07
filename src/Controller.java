@@ -10,21 +10,18 @@ public class Controller  {
     private int time = 0;
     private Timer timer;
     private View view;
-    private startImageGrid SIG = new startImageGrid();
-    //private endImageGrid EIG = new endImageGrid();
-    private startImageGrid EIG = new startImageGrid();
-    private static ControlPoint[][] endCPArr =  new ControlPoint[20][20];
-    private static ControlPoint[][] morphCPArr= new ControlPoint[20][20];
-    private static ControlPoint[][] origArr = new ControlPoint[20][20];
-    private JFrame jframe;
+    private  ControlPoint[][] endCPArr ;
+    private  ControlPoint[][] morphCPArr;
+    private  ControlPoint[][] origArr;
+    private startImageView SV;
     private boolean flag =false;
 
 
     public Controller(){
-        //Controller(ControlPoint startArr[][], ControlPoint endArr[][], JFrame jframe){
+
 
         JButton stopPreview = new JButton("Stop Preview");
-            //view  = new View();
+            //view  = new View()
             fps=0;
             time=0;
 
@@ -37,17 +34,18 @@ public class Controller  {
 
                 if(time% (1000/frames)==0){
                     fps++;
-                    System.out.println(fps);
+
                     /**NEEDS TO BE frames*seconds
                      * ALSO: CHANGE THE FOR LOOP SIZES TO THE CORRECT MEASUREMENTS */
                    view.showMorph(fps, frames);
+                    redraw();
                   //  view.startMorph(fps, frames);
                 }
 
                 if(fps== frames*3){
                     timer.stop();
                 }
-                redraw();
+
               //  System.out.println("Time "+time);
               /*  if(flag){
                     origGridRedraw();
@@ -74,11 +72,10 @@ public class Controller  {
 
     }
 
-    public void setArrays(ControlPoint startArr[][], ControlPoint endArr[][], JFrame jframe){
-        this.jframe = jframe;
+    public void setArrays(ControlPoint startArr[][], ControlPoint endArr[][], startImageView SV){
+        this.SV =SV;
         this.endCPArr=endArr;
         this.morphCPArr= startArr;
-        SIG.setCPArray(morphCPArr);
         this.origArr = startArr;
     }
 
@@ -101,10 +98,11 @@ public class Controller  {
                     System.out.println(x1 +" "+x2+ " "+y1+" "+y2);
                     this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
                 }
-                jframe.repaint();
+                SV.repaint();
+
             }
         }
-        view.setPreviewArr(SIG);
+
     }
 
     public void origGridRedraw(){
@@ -122,10 +120,9 @@ public class Controller  {
                     System.out.println(x1 +" "+x2+ " "+y1+" "+y2);
                     this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
                 }
-                jframe.repaint();
             }
         }
-        view.setPreviewArr(SIG);
+
         flag =true;
     }
 
@@ -135,5 +132,7 @@ public class Controller  {
 
     public void stopTimer(){
         timer.stop();
+        time=0;
+        fps=0;
     }
 }

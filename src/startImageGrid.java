@@ -1,5 +1,5 @@
 public class startImageGrid {
-    private static ControlPoint[][] CPArray= new ControlPoint[20][20];
+    private  ControlPoint[][] CPArray= new ControlPoint[20][20];
     private static Polygons[][] polygons = new Polygons[20][20];
     private static int gridSize;
 
@@ -12,12 +12,8 @@ public class startImageGrid {
 
     public void setCPArray(ControlPoint[][] CPArray){
         this.CPArray = CPArray;
-
     }
 
-    public Polygons[][] getPolygons(){
-        return polygons;
-    }
 
     public ControlPoint[][] getCPArray() {
         return CPArray;

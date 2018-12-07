@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 
@@ -26,6 +28,7 @@ public class morphWindow extends JDialog {
     //private endImageGrid EIG = new endImageGrid();
     private startImageGrid EIG = new startImageGrid();
     private JPanel previewPanel;
+    private View view;
 
 
     // instance variable to hold the buffered image
@@ -58,7 +61,15 @@ public class morphWindow extends JDialog {
 
         add(previewPanel);
 
+        addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
+                System.out.println("Resetting");
+                view.resetFinalImage();
 
+            }
+        });
     }
 
     public void setImage(BufferedImage img) {
@@ -73,7 +84,6 @@ public class morphWindow extends JDialog {
         setPreferredSize(new Dimension(bim.getWidth(), bim.getHeight()));
         //  showfiltered=false;
         this.repaint();
-        System.out.println("Setting Image");
 
     }
 
@@ -100,5 +110,7 @@ public class morphWindow extends JDialog {
         return bim;
     }
 
-
+    public void setView(View view){
+      this.view = view;
+    }
 }
