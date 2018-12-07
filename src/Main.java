@@ -12,8 +12,10 @@ import java.awt.image.BufferedImage;
 public class Main {
 
     public static void main(String[] args) {
-        View v = new View();
-        v.JMorphView();
+
+        Controller c = new Controller();
+        View v = new View(c);
+        //v.JMorph();
         v.addWindowListener(
                 new WindowAdapter() {
                     public void windowClosing(WindowEvent e) {

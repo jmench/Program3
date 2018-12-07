@@ -13,18 +13,30 @@ public class View extends JFrame {
     private BufferedImage image;
     private JSlider ControlPointSize;
     private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel;
-    private startImageView startImage;
-    private endImageView  endImage;
-    private ControlPoint CPArray[][];
-    private Polygons PolyArray[][] = new Polygons[10][10];
+    private startImageView startImage, morphImage;
+    private startImageView endImage;
+   // private endImageView  endImage;
+    private startImageGrid SIG = new startImageGrid();
+   // private endImageGrid EIG = new endImageGrid();
+    private startImageGrid EIG = new startImageGrid();
+
+    private ControlPoint previewArr[][];
+    private startImageGrid previewGrid = new startImageGrid();
+
     private int gridSize = 10;
     private JSlider startIntensity, endIntensity;
     private BufferedImage bim;
+    private Controller CTR;
+    private MorphTools MT =new MorphTools();
+    public BufferedImage startFrames[];
+    public BufferedImage endFrames[];
 
-    public void JMorphView(){
+    public morphWindow gui;
 
+    public View(Controller CTR){
 
-
+        this.CTR = CTR;
+        CTR.setView(this);
         //This panel is used to hold our buttons
         buttonPanel = new JPanel();
 
@@ -51,7 +63,11 @@ public class View extends JFrame {
          */
 
         startImage = new startImageView(readImage("./src/boat_resized.gif"));
-        endImage = new endImageView(readImage("./src/boat_resized.gif"));
+        endImage = new startImageView(readImage("./src/lion.jpg"));
+       //// endImage = new endImageView(readImage("./src/boat_resized.gif"));
+        morphImage = new startImageView(readImage("./src/boat_resized.gif"));
+
+        gui = new morphWindow(View.this, startImage.getImage());
 
         startImage.addGrid(gridSize);
         endImage.addGrid(gridSize);
@@ -97,17 +113,59 @@ public class View extends JFrame {
 
         //This allows the user to preview the image morph
         previewMorph = new JButton("Preview Morph");
+
+        //Stops the morph preview
+        JButton stopPreview = new JButton("Stop Preview");
+
+        //Resets the preview grid
+        JButton resetPreview = new JButton("Reset Preview");
+
         previewMorph.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                morphWindow gui = new morphWindow(View.this, startImage.getImage());
-                gui.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Not exit, exit would close
-                gui.setSize(700, 700);
-                gui.setLocationRelativeTo(null);
-                gui.setVisible(true);
-                gui.setResizable(false);
+                CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), View.this);
+                previewMorph.setEnabled(false);
+                stopPreview.setEnabled(true);
+                resetPreview.setEnabled(false);
+
             }
         });
+
+        stopPreview.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CTR.stopTimer();
+                previewMorph.setEnabled(true);
+                stopPreview.setEnabled(false);
+                resetPreview.setEnabled(true);
+
+            }
+        });
+
+        resetPreview.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //CTR = new Controller(SIG.getCPArray(), EIG.getCPArray(), View.this);
+                CTR.origGridRedraw();
+            }
+        });
+
+        /**We'll use this for the GENERATE MORPH button */
+        genMorph.addActionListener(new ActionListener() {
+                               @Override
+                               public void actionPerformed(ActionEvent e) {
+
+                                   morph();
+                                   CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), View.this);
+                                   CTR.startTimer();
+                                  // morphWindow gui = new morphWindow(View.this, startImage.getImage());
+                                   gui.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Not exit, exit would close
+                                   gui.setSize(700, 700);
+                                   gui.setLocationRelativeTo(null);
+                                   gui.setVisible(true);
+                                   gui.setResizable(false);
+                               }});
+
 
         setPanel.add(setLeft);
         setPanel.add(setRight);
@@ -122,6 +180,9 @@ public class View extends JFrame {
         resPanel.add(gridSizes);
 
         morphPanel.add(previewMorph);
+        morphPanel.add(stopPreview);
+        morphPanel.add(resetPreview);
+        stopPreview.setEnabled(false);
         morphPanel.add(genMorph);
 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
@@ -193,7 +254,7 @@ public class View extends JFrame {
                            //Then resize and redraw the grid
                             startImage.addGrid(gridSize);
 
-
+                            gui.setImage(image);
                         }
                     }
                 }
@@ -226,7 +287,7 @@ public class View extends JFrame {
     //A function used to resize the buffered image
     //Source: https://stackoverflow.com/questions/9417356/bufferedimage-resize
     public static BufferedImage resize(BufferedImage img, double newW, double newH) {
-        System.out.println("Rescaled "+newW+" "+newH );
+
         Image tmp = img.getScaledInstance((int) (img.getWidth()*newW), (int) (img.getHeight()*newH), Image.SCALE_SMOOTH);
         BufferedImage dimg = new BufferedImage((int) (img.getWidth()*newW), (int) (img.getHeight()*newH), BufferedImage.TYPE_INT_ARGB);
 
@@ -262,6 +323,137 @@ public class View extends JFrame {
 
     public BufferedImage getImage() {
         return bim;
+    }
+
+    public void setPreviewArr(startImageGrid previewGrid){
+        this.previewGrid = previewGrid;
+    }
+
+    public void startMorph(int fps, int frames){
+        startImageGrid start = SIG;
+        previewGrid = SIG;
+        startImageGrid end = EIG;
+        //endImageGrid end =EIG;
+
+
+        for(int x=1; x<9; x++){
+            for(int y=0; y<9; y++){
+                double x1 = previewGrid.getCPArray()[x][y].getPosX();
+                double y1= previewGrid.getCPArray()[x][y].getPosY();
+                double x2 = EIG.getCPArray()[x][y].getPosX();
+                double y2 = EIG.getCPArray()[x][y].getPosY();
+
+                double i = ((fps*((x2-x1)/frames)))+x1;
+                double j = ((fps*(x2-x1)/frames))+y1;
+            }
+        }
+
+        for(int x=0; x<9; x++){
+            for(int y=0; y<9; y++){
+
+                int sx1 = start.getCPArray()[x][y].getPosX();
+                int sy1 = start.getCPArray()[x][y].getPosY();
+                int sx2 = start.getCPArray()[x][y+1].getPosX();
+                int sy2 = start.getCPArray()[x][y+1].getPosY();
+                int sx3 = start.getCPArray()[x+1][y].getPosX();
+                int sy3 = start.getCPArray()[x+1][y].getPosY();
+                int sx4 = start.getCPArray()[x+1][y+1].getPosX();
+                int sy4 = start.getCPArray()[x+1][y+1].getPosY();
+
+                int dx1 = previewGrid.getCPArray()[x][y].getPosX();
+                int dy1 = previewGrid.getCPArray()[x][y].getPosY();
+                int dx2 = previewGrid.getCPArray()[x][y+1].getPosX();
+                int dy2 = previewGrid.getCPArray()[x][y+1].getPosY();
+                int dx3 = previewGrid.getCPArray()[x+1][y].getPosX();
+                int dy3 = previewGrid.getCPArray()[x+1][y].getPosY();
+                int dx4 = previewGrid.getCPArray()[x+1][y+1].getPosX();
+                int dy4 = previewGrid.getCPArray()[x+1][y+1].getPosY();
+
+
+                if (((x == 9) && (y == 1))
+                        || ((x == 1) && (y == 9))) {
+
+                    Triangle S = new Triangle(sx1, sy1, sx2, sy2, sx4, sy4);
+                    Triangle D = new Triangle(dx1, dy1, dx2, dy2, dx4, dy4);
+                    MT.warpTriangle(startImage.getImage(), morphImage.getImage(), S, D, null, null);
+
+                    S = new Triangle(sx2, sy2, sx3, sy3, sx4, sy4);
+                    D = new Triangle(dx2, dy2, dx3, dy3, dx4, dy4);
+                    MT.warpTriangle(startImage.getImage(), morphImage.getImage(), S, D, null, null);
+
+                }
+                else {
+
+                    Triangle S = new Triangle(sx1, sy1, sx2, sy2, sx3, sy3);
+                    Triangle D = new Triangle(dx1, dy1, dx2, dy2, dx3, dy3);
+                    MT.warpTriangle(startImage.getImage(), morphImage.getImage(), S, D, null, null);
+
+                    S = new Triangle(sx3, sy3, sx4, sy4, sx1, sy1);
+                    D = new Triangle(dx3, dy3, dx4, dy4, dx1, dy1);
+                    MT.warpTriangle(startImage.getImage(), morphImage.getImage(), S, D, null, null);
+                }
+            }
+        }
+        morphImage.repaint();
+       // gui.repaint();
+    }
+
+    public void showMorph(int fps, int frames){
+       BufferedImage startFrame= startImage.getImage();
+       BufferedImage endFrame = endImage.getImage();
+         //startFrame = startFrames[frames-1];
+         //endFrame = endFrames[frames - fps];
+        BufferedImage finalImage = new BufferedImage(startFrame.getWidth(), startFrame.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+
+        Graphics g = finalImage.getGraphics();
+        Graphics2D g2 = (Graphics2D) g.create();
+
+        g2.setComposite(AlphaComposite.SrcOver.derive(1 - ((float)fps / frames)));
+        g2.drawImage(startFrame, 0, 0, this);
+
+        g2.setComposite(AlphaComposite.SrcOver.derive((float) fps / frames));
+        g2.drawImage(endFrame, 0, 0, this);
+
+        morphImage.setImage(finalImage);
+        gui.setImage(finalImage);
+        gui.repaint();
+    }
+
+    public void morph(){
+        /**NEEDS TO BE frames*seconds */
+        int fps = 30*3;
+
+        startFrames = new BufferedImage[fps];
+        endFrames = new BufferedImage[fps];
+
+        morphImage = copyMorphImage(endImage);
+
+        for(int i=0; i<endFrames.length; i++){
+            startMorph(i, fps);
+            endFrames[i] = startImageView.deepCopy(morphImage.getImage());
+
+        }
+
+        /** morphImageView.resetPreviewControlPoints(); */
+
+        morphImage = copyMorphImage(startImage);
+        for(int i=0; i<startFrames.length; i++){
+            startMorph(i, fps);
+            startFrames[i] = startImageView.deepCopy(morphImage.getImage());
+           // System.out.println("Frame "+i+" "+startFrames[i]);
+        }
+
+
+
+        //morphWindow mw = new morphWindow(View.this, endImage.getImage());
+
+    }
+
+
+    private startImageView copyMorphImage(startImageView image) {
+        /**CHANGE THIS AND MAKE IT MORE DYNAMIC */////
+        return new startImageView(readImage("./src/boat_resized.gif"));
     }
 
 

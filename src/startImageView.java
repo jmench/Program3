@@ -14,6 +14,7 @@ public class startImageView extends JLabel {
     //Determines how large the neighbor boundary is depending on the resolution
     private int boundSpace;
     private startImageGrid SIG = new startImageGrid();
+    private Controller CTR;
 
 
     // instance variable to hold the buffered image
@@ -97,7 +98,6 @@ public class startImageView extends JLabel {
             big.drawImage(bim, 0, 0, this);
 
         if(redrawGrid){
-
             for(int i=0; i<gridSize; i++){
                 for(int j=0; j<gridSize; j++){
                     g.setColor(Color.BLACK);
@@ -179,6 +179,7 @@ public class startImageView extends JLabel {
         SIG.setCPArray(CPArray);
         SIG.setPolygons(polygons);
         SIG.setGridSize(gridSize);
+
     }
 
 
@@ -282,10 +283,10 @@ public class startImageView extends JLabel {
                                             return;
                                         }
 
-                                        /** CURRENTLY WORKS, BUT MAY NEED FURTHER TESTING*/
+                                        /** TODO: Prevent dots from crossing the triangle lines*/
                                         //Prevents a dot from diagonally crossing a neighbor's path
-                                        if(CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+5)+(CPArray[i-1][j].getPosY()-5))/2
-                                        || CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+5)+(CPArray[i+1][j].getPosY()-5))/2){
+                                        if(CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+boundSpace)+(CPArray[i-1][j].getPosY()-boundSpace))/2
+                                        || CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+boundSpace)+(CPArray[i+1][j].getPosY()-boundSpace))/2){
                                             CPArray[i][j].setPosY(e.getY()+7);
                                             return;
                                         }
@@ -305,6 +306,7 @@ public class startImageView extends JLabel {
                                         SIG.setCPArray(CPArray);
                                         SIG.setPolygons(polygons);
                                         SIG.setGridSize(gridSize);
+
 
                                     }
                                 }
@@ -370,6 +372,31 @@ public class startImageView extends JLabel {
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
+
+    public void setPolygons(Polygons[][] polygons){
+        this.polygons = polygons;
+    }
+
+    public void setCPArray(ControlPoint[][] CPArray){
+        this.CPArray = CPArray;
+
+    }
+
+    public Polygons[][] getPolygons(){
+        return polygons;
+    }
+
+    public ControlPoint[][] getCPArray() {
+        return CPArray;
+    }
+
+    public void setGridSize(int gridSize){
+        this.gridSize = gridSize;
+    }
+
+    public int getGridSize(){
+        return gridSize;
+    }
 
 
 }
