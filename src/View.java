@@ -11,8 +11,8 @@ import java.io.IOException;
 public class View extends JFrame {
     private JButton setLeft, setRight, previewMorph, genMorph;
     private BufferedImage image;
-    private JSlider ControlPointSize;
-    private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel;
+    private JSlider speed, fps;
+    private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel, speedPanel;
     private startImageView startImage, morphImage;
     private startImageView endImage;
    // private endImageView  endImage;
@@ -24,6 +24,7 @@ public class View extends JFrame {
     private startImageGrid previewGrid = new startImageGrid();
 
     private int gridSize = 10;
+    private Color CPColor = Color.BLACK;
     private JSlider startIntensity, endIntensity;
     private BufferedImage bim;
     private Controller CTR;
@@ -50,8 +51,11 @@ public class View extends JFrame {
         //This holds our sliders
         sliderPanel = new JPanel();
 
-        //This holds our resolution
+        //This holds our resolution and color of the grid
         resPanel = new JPanel();
+
+        //This panel holds the sliders for speed and fps
+        speedPanel = new JPanel();
 
         //Panel for the images
         imagePanel = new JPanel();
@@ -67,8 +71,8 @@ public class View extends JFrame {
         gui = new morphWindow(View.this, startImage.getImage());
         gui.setView(this);
 
-        startImage.addGrid(gridSize);
-        endImage.addGrid(gridSize);
+        startImage.addGrid(gridSize, CPColor);
+        endImage.addGrid(gridSize, CPColor);
 
         SIG = startImage.getStartGrid();
         EIG = endImage.getStartGrid();
@@ -105,10 +109,34 @@ public class View extends JFrame {
             }
         });
 
+        JLabel speedLabel = new JLabel("Speed: 3");
+        JLabel fpsLabel = new JLabel("Frames Per Second: 20");
+        speed = new JSlider(JSlider.HORIZONTAL, 1, 5, 3);
+        fps = new JSlider(JSlider.HORIZONTAL, 1, 60, 20);
+
+        speed.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                speedLabel.setText("Speed: " + speed.getValue());
+            }
+        });
+
+        fps.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                fpsLabel.setText("Frames Per Second: " + fps.getValue());
+            }
+        });
+
         JLabel gridRes = new JLabel("Grid Resolution");
         String[] gridStrings= {"5x5", "10x10", "20x20"};
         JComboBox gridSizes = new JComboBox(gridStrings);
         gridSizes.setSelectedIndex(1);
+
+        JLabel gridCol = new JLabel("Grid Color");
+        String[] gridcols = {"Black", "Blue", "Green", "White"};
+        JComboBox colors = new JComboBox(gridcols);
+        colors.setSelectedIndex(0);
 
 
         //This allows the user to start the morph generation
@@ -182,6 +210,8 @@ public class View extends JFrame {
 
         resPanel.add(gridRes);
         resPanel.add(gridSizes);
+        resPanel.add(gridCol);
+        resPanel.add(colors);
 
         morphPanel.add(previewMorph);
         morphPanel.add(stopPreview);
@@ -189,12 +219,19 @@ public class View extends JFrame {
         stopPreview.setEnabled(false);
         morphPanel.add(genMorph);
 
+        speedPanel.add(speedLabel);
+        speedPanel.add(speed);
+        speedPanel.add(fpsLabel);
+        speedPanel.add(fps);
+
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
 
         buttonPanel.add(setPanel);
         buttonPanel.add(sliderPanel);
         buttonPanel.add(resPanel);
+        buttonPanel.add(speedPanel);
         buttonPanel.add(morphPanel);
+
 
 
         //Adds the image and button panels to our JFrame
@@ -211,26 +248,49 @@ public class View extends JFrame {
         final JFileChooser fc = new JFileChooser(".");
 
         gridSizes.addActionListener(new ActionListener() {
-                                        @Override
-                                        public void actionPerformed(ActionEvent e) {
-                                            int v=  gridSizes.getSelectedIndex();
-                                            if(v==0){
-                                                gridSize=5;
-                                            }
-                                            else if(v==1){
-                                                gridSize=10;
-                                            }
-                                            else{
-                                                gridSize=20;
-                                            }
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int v=  gridSizes.getSelectedIndex();
+                if(v==0){
+                    gridSize=5;
+                }
+                else if(v==1){
+                    gridSize=10;
+                }
+                else{
+                    gridSize=20;
+                }
 
-                                            startImage.addGrid(gridSize);
-                                            startImage.repaint();
-                                            endImage.addGrid(gridSize);
-                                            endImage.repaint();
-                                        }
-                                    }
-        );
+                startImage.addGrid(gridSize, CPColor);
+                startImage.repaint();
+                endImage.addGrid(gridSize, CPColor);
+                endImage.repaint();
+            }
+        });
+
+        colors.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int v= colors.getSelectedIndex();
+                if(v==0){
+                    CPColor=Color.BLACK;
+                }
+                else if(v==1){
+                    CPColor=Color.BLUE;
+                }
+                else if (v==2){
+                    CPColor=Color.GREEN;
+                }
+                else {
+                    CPColor=Color.WHITE;
+                }
+
+                startImage.addGrid(gridSize, CPColor);
+                startImage.repaint();
+                endImage.addGrid(gridSize, CPColor);
+                endImage.repaint();
+            }
+        });
 
         //This allows us to change the images in their respective panels
         setLeft.addActionListener(
@@ -256,7 +316,7 @@ public class View extends JFrame {
                            startImage.showImage();
 
                            //Then resize and redraw the grid
-                            startImage.addGrid(gridSize);
+                            startImage.addGrid(gridSize, CPColor);
 
                             gui.setImage(image);
                         }
@@ -282,7 +342,7 @@ public class View extends JFrame {
                             } catch (IOException e1){};
                             endImage.setOrigImage(image);
                             endImage.showImage();
-                            endImage.addGrid(gridSize);
+                            endImage.addGrid(gridSize, CPColor);
                         }
                     }
                 }

@@ -14,6 +14,7 @@ public class startImageView extends JLabel {
     //Determines how large the neighbor boundary is depending on the resolution
     private int boundSpace;
     private startImageGrid SIG = new startImageGrid();
+    private Controller CTR;
 
 
     // instance variable to hold the buffered image
@@ -26,6 +27,8 @@ public class startImageView extends JLabel {
 
     //  tell the paintcomponent method what to draw
     private boolean showfiltered=false;
+
+    private Color gridColor;
 
     // Default constructor
     //public startImageView() {
@@ -99,7 +102,7 @@ public class startImageView extends JLabel {
         if(redrawGrid){
             for(int i=0; i<gridSize; i++){
                 for(int j=0; j<gridSize; j++){
-                    g.setColor(Color.BLACK);
+                    g.setColor(gridColor);
                     //Draws the diagonal connections between the points
                     if (i != gridSize-1 && j != gridSize-1) {
                         g.drawLine(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i + 1][j + 1].getPosX(), CPArray[i + 1][j + 1].getPosY());
@@ -119,7 +122,7 @@ public class startImageView extends JLabel {
                             g.setColor(Color.RED);
                         }
                         else{
-                            g.setColor(Color.BLACK);
+                            g.setColor(gridColor);
                         }
                         g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
                         vertex_x_coord = new int[]{CPArray[i][j].getPosX() - 5, CPArray[i][j].getPosX() + 7, CPArray[i][j].getPosX() + 7, CPArray[i][j].getPosX() - 5};
@@ -142,7 +145,7 @@ public class startImageView extends JLabel {
             for (int i = 0; i < gridSize; i++) {
                 for (int j = 0; j < gridSize; j++) {
 
-                    g.setColor(Color.BLACK);
+                    g.setColor(gridColor);
 
                     //Draws the diagonal connections between the points
                     if (i != gridSize-1 && j != gridSize-1) {
@@ -179,10 +182,11 @@ public class startImageView extends JLabel {
 
 
 
-
-    public void addGrid(int gridSize) {
-
-
+    /**
+     * TODO: Add a gridsize parameter for when we want to change the gridsize
+     */
+    public void addGrid(int gridSize, Color color) {
+        gridColor = color;
         this.gridSize = gridSize;
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
