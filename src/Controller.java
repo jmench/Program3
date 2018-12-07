@@ -47,13 +47,14 @@ public class Controller  {
                 if(fps== frames*3){
                     timer.stop();
                 }
+                redraw();
               //  System.out.println("Time "+time);
-                if(flag){
+              /*  if(flag){
                     origGridRedraw();
                 }
                 else {
                     redraw();
-                }
+                }*/
                 time++;
             }
         });
@@ -67,7 +68,7 @@ public class Controller  {
                 timer.stop();
                 time =0;
             }});
-       // System.out.println("Starting Coords ");
+
 
 
 

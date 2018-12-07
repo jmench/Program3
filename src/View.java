@@ -124,6 +124,7 @@ public class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), View.this);
+                CTR.startTimer();
                 previewMorph.setEnabled(false);
                 stopPreview.setEnabled(true);
                 resetPreview.setEnabled(false);
@@ -197,7 +198,7 @@ public class View extends JFrame {
         add(imagePanel);
         add(buttonPanel);
 
-        setSize(1000,1000);
+        setSize(1200,1000);
         setVisible(true);
 
 
@@ -223,7 +224,7 @@ public class View extends JFrame {
                                             startImage.addGrid(gridSize);
                                             startImage.repaint();
                                             endImage.addGrid(gridSize);
-                                            startImage.repaint();
+                                            endImage.repaint();
                                         }
                                     }
         );
@@ -340,8 +341,8 @@ public class View extends JFrame {
             for(int y=0; y<9; y++){
                 double x1 = previewGrid.getCPArray()[x][y].getPosX();
                 double y1= previewGrid.getCPArray()[x][y].getPosY();
-                double x2 = EIG.getCPArray()[x][y].getPosX();
-                double y2 = EIG.getCPArray()[x][y].getPosY();
+                double x2 = end.getCPArray()[x][y].getPosX();
+                double y2 = end.getCPArray()[x][y].getPosY();
 
                 double i = ((fps*((x2-x1)/frames)))+x1;
                 double j = ((fps*(x2-x1)/frames))+y1;
@@ -395,7 +396,6 @@ public class View extends JFrame {
             }
         }
         morphImage.repaint();
-       // gui.repaint();
     }
 
     public void showMorph(int fps, int frames){
@@ -441,12 +441,9 @@ public class View extends JFrame {
         for(int i=0; i<startFrames.length; i++){
             startMorph(i, fps);
             startFrames[i] = startImageView.deepCopy(morphImage.getImage());
-           // System.out.println("Frame "+i+" "+startFrames[i]);
+
         }
 
-
-
-        //morphWindow mw = new morphWindow(View.this, endImage.getImage());
 
     }
 
