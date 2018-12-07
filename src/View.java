@@ -58,6 +58,8 @@ public class View extends JFrame {
 
         //Panel for the images
         imagePanel = new JPanel();
+
+
         FlowLayout experimentLayout = new FlowLayout();
         imagePanel.setLayout(experimentLayout);
 
@@ -162,6 +164,7 @@ public class View extends JFrame {
                 previewMorph.setEnabled(false);
                 stopPreview.setEnabled(true);
                 resetPreview.setEnabled(false);
+                setComponentState(false);
 
             }
         });
@@ -348,6 +351,10 @@ public class View extends JFrame {
                     }
                 }
         );
+    }
+
+    public void setComponentState(boolean state){
+
     }
     //A function used to resize the buffered image
     //Source: https://stackoverflow.com/questions/9417356/bufferedimage-resize

@@ -19,14 +19,8 @@ public class Controller  {
 
 
     public Controller(){
-
-
-        JButton stopPreview = new JButton("Stop Preview");
             fps=0;
             time=0;
-
-
-
 
         /**The value was originally left at '1' (instead of 1000), so
          * this we need to be readjusted for a consisten FPS rate
@@ -63,13 +57,6 @@ public class Controller  {
       //  timer.start();
 
 
-        stopPreview.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timer.stop();
-                time =0;
-                runMorph=false;
-            }});
 
 
 
@@ -99,9 +86,7 @@ public class Controller  {
                 if(x1!=x2 && y1!=y2){
                     dx = x1 +(10*(x2-x1)/40);
                     dy = y1 + (10*(y2-y1)/40);
-                   // this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
-                    this.morphCPArr[i][j].setPreviewX(dx);
-                    this.morphCPArr[i][j].setPreviewY(dy);
+                    this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
                 }
                 SV.repaint();
 
@@ -123,6 +108,7 @@ public class Controller  {
                     dy = y1 + (10*(y2-y1)/40);
                     this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
                 }
+               // SV.repaint();
             }
         }
 
