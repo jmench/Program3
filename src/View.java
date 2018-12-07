@@ -49,7 +49,7 @@ public class View extends JFrame {
         //This holds our sliders
         sliderPanel = new JPanel();
 
-        //This holds our resolution
+        //This holds our resolution and color of the grid
         resPanel = new JPanel();
 
         //This panel holds the sliders for speed and fps
@@ -129,6 +129,11 @@ public class View extends JFrame {
         JComboBox gridSizes = new JComboBox(gridStrings);
         gridSizes.setSelectedIndex(1);
 
+        JLabel gridCol = new JLabel("Grid Color");
+        String[] gridcols = {"Black, Blue, Green, White"};
+        JComboBox colors = new JComboBox(gridcols);
+        colors.setSelectedIndex(0);
+
 
         //This allows the user to start the morph generation
         genMorph = new JButton("Generate Morph");
@@ -201,6 +206,8 @@ public class View extends JFrame {
 
         resPanel.add(gridRes);
         resPanel.add(gridSizes);
+        resPanel.add(gridCol);
+        resPanel.add(colors);
 
         morphPanel.add(previewMorph);
         morphPanel.add(stopPreview);
