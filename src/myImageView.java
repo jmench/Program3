@@ -4,16 +4,23 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.*;
 import java.awt.event.MouseEvent;
-public class endImageView extends JLabel {
+public class myImageView extends JLabel {
 
-    private static ControlPoint[][] CPArray= new ControlPoint[20][20];
-    private static Polygons[][] polygons = new Polygons[20][20];
+    private ControlPoint[][] CPArray= new ControlPoint[20][20];
+    private  Polygons[][] polygons = new Polygons[20][20];
     private boolean redrawGrid = true;
     private boolean isDragged = false;
     private int gridSize;
+
     //Determines how large the neighbor boundary is depending on the resolution
     private int boundSpace;
-    private endImageGrid SIG = new endImageGrid();
+
+    private myImageGrid SIG = new myImageGrid();
+
+    private Color color;
+    private String fileName;
+    private View view;
+    private String side;
 
 
     // instance variable to hold the buffered image
@@ -27,13 +34,11 @@ public class endImageView extends JLabel {
     //  tell the paintcomponent method what to draw
     private boolean showfiltered=false;
 
-    // Default constructor
-    public endImageView() {
-    }
+
 
     // This constructor stores a buffered image passed in as a parameter
-    public endImageView(BufferedImage img) {
-        bim = deepCopy(img);
+    public myImageView(BufferedImage img) {
+        bim = copyImage(img);
         origBim = img;
         filteredbim = new BufferedImage
                 (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -47,43 +52,47 @@ public class endImageView extends JLabel {
     //     instance variable
     public void setImage(BufferedImage img) {
         if (img == null) return;
-
-
-        //////CHANGE FUNCTION NAME
-        bim = deepCopy(img);
-        // origBim = img;
-        //filteredbim = new BufferedImage
-        // (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
+        bim = copyImage(img);
         setPreferredSize(new Dimension(bim.getWidth(), bim.getHeight()));
-        //  showfiltered=false;
         this.repaint();
     }
 
-    ////////////
+
     public void setOrigImage(BufferedImage img) {
         if (img == null) return;
 
-        //////CHANGE FUNCTION NAME
-        origBim = img;
-        bim = deepCopy(img);
 
-        //filteredbim = new BufferedImage
-        // (bim.getWidth(), bim.getHeight(), BufferedImage.TYPE_INT_RGB);
+        origBim = img;
+        bim = copyImage(img);
+
         setPreferredSize(new Dimension(bim.getWidth(), bim.getHeight()));
-        //  showfiltered=false;
         this.repaint();
     }
 
-    // accessor to get a handle to the bufferedimage object stored here
+    //Allows use the change the color of our controlpoints
+    public void setNewColor(int x, int y, Color color){
+        CPArray[x][y].setColor(color);
+        redrawGrid=true;
+        repaint();
+    }
+
+
+
+    // Accessor to get a handle to the bufferedimage object stored here
     public BufferedImage getImage() {
         return bim;
     }
 
-    //  show current image by a scheduled call to paint()
+    //  Shows the current image by calling the paint function
     public void showImage() {
         if (bim == null) return;
         showfiltered=false;
         this.repaint();
+    }
+
+    //Determines which side the corresponding imageView is on
+    public void setSide(String side){
+        this.side = side;
     }
 
     //  get a graphics context and show either filtered image or
@@ -97,10 +106,9 @@ public class endImageView extends JLabel {
             big.drawImage(bim, 0, 0, this);
 
         if(redrawGrid){
-
             for(int i=0; i<gridSize; i++){
                 for(int j=0; j<gridSize; j++){
-                    g.setColor(Color.BLACK);
+                    g.setColor(color);
                     //Draws the diagonal connections between the points
                     if (i != gridSize-1 && j != gridSize-1) {
                         g.drawLine(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i + 1][j + 1].getPosX(), CPArray[i + 1][j + 1].getPosY());
@@ -120,30 +128,26 @@ public class endImageView extends JLabel {
                             g.setColor(Color.RED);
                         }
                         else{
-                            g.setColor(Color.BLACK);
+                            g.setColor(color);
                         }
                         g.fillOval(CPArray[i][j].getPosX(), CPArray[i][j].getPosY(), CPArray[i][j].getRadius(), CPArray[i][j].getRadius());
                         vertex_x_coord = new int[]{CPArray[i][j].getPosX() - 5, CPArray[i][j].getPosX() + 7, CPArray[i][j].getPosX() + 7, CPArray[i][j].getPosX() - 5};
                         vertex_y_coord = new int[]{CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() + 7, CPArray[i][j].getPosY() + 7};
                         polygons[i][j] = new Polygons(vertex_x_coord, vertex_y_coord, 4);
 
-                        /**
-                         * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
-                         */
-
-                        // g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
 
                     }
                 }
             }
             redrawGrid = false;
+
         }
 
         else{
             for (int i = 0; i < gridSize; i++) {
                 for (int j = 0; j < gridSize; j++) {
 
-                    g.setColor(Color.BLACK);
+                    g.setColor(color);
 
                     //Draws the diagonal connections between the points
                     if (i != gridSize-1 && j != gridSize-1) {
@@ -166,11 +170,6 @@ public class endImageView extends JLabel {
                         vertex_y_coord = new int[]{CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() - 5, CPArray[i][j].getPosY() + 7, CPArray[i][j].getPosY() + 7};
                         polygons[i][j] = new Polygons(vertex_x_coord, vertex_y_coord, 4);
 
-                        /**
-                         * NOTE: Draw polygon is only used for testing. It should be deleted for the final product
-                         */
-
-                        //g.drawPolygon(polygons[i][j].getXarray(), polygons[i][j].getYarray(), 4);
                     }
                 }
             }
@@ -179,17 +178,17 @@ public class endImageView extends JLabel {
         SIG.setCPArray(CPArray);
         SIG.setPolygons(polygons);
         SIG.setGridSize(gridSize);
+
     }
 
 
 
+    public void changeColor(Color color){
+        this.color = color;
+    }
 
-    /**
-     * TODO: Add a gridsize parameter for when we want to change the gridsize
-     */
+
     public void addGrid(int gridSize) {
-
-
         this.gridSize = gridSize;
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
@@ -256,44 +255,46 @@ public class endImageView extends JLabel {
 
                                         //Prevents a dot from horizontally crossing a neighbor's path
                                         if(CPArray[i][j].getPosX()<CPArray[i-1][j].getPosX()+boundSpace
-                                                || CPArray[i][j].getPosX()<CPArray[i-1][j-1].getPosX()+boundSpace
-                                                || CPArray[i][j].getPosX()<CPArray[i-1][j+1].getPosX()+boundSpace){
+                                        || CPArray[i][j].getPosX()<CPArray[i-1][j-1].getPosX()+boundSpace
+                                        || CPArray[i][j].getPosX()<CPArray[i-1][j+1].getPosX()+boundSpace){
                                             CPArray[i][j].setPosX(e.getX()+7);
                                             return;
                                         }
                                         if(CPArray[i][j].getPosX()>CPArray[i+1][j].getPosX()-boundSpace
-                                                || CPArray[i][j].getPosX()>CPArray[i+1][j-1].getPosX()-boundSpace
-                                                || CPArray[i][j].getPosX()>CPArray[i+1][j+1].getPosX()-boundSpace){
+                                        || CPArray[i][j].getPosX()>CPArray[i+1][j-1].getPosX()-boundSpace
+                                        || CPArray[i][j].getPosX()>CPArray[i+1][j+1].getPosX()-boundSpace){
                                             CPArray[i][j].setPosX(e.getX()-7);
                                             return;
                                         }
 
                                         //Prevents a dot from vertically crossing a neighbor's path
                                         if(CPArray[i][j].getPosY()<CPArray[i][j-1].getPosY()+boundSpace
-                                                || CPArray[i][j].getPosY()<CPArray[i-1][j-1].getPosY()+boundSpace
-                                                || CPArray[i][j].getPosY()<CPArray[i+1][j-1].getPosY()+boundSpace){
+                                        || CPArray[i][j].getPosY()<CPArray[i-1][j-1].getPosY()+boundSpace
+                                        || CPArray[i][j].getPosY()<CPArray[i+1][j-1].getPosY()+boundSpace){
                                             CPArray[i][j].setPosY(e.getY()+7);
                                             return;
                                         }
                                         if(CPArray[i][j].getPosY()>CPArray[i][j+1].getPosY()-boundSpace
-                                                || CPArray[i][j].getPosY()>CPArray[i-1][j+1].getPosY()-boundSpace
-                                                || CPArray[i][j].getPosY()>CPArray[i+1][j+1].getPosY()-boundSpace){
+                                        || CPArray[i][j].getPosY()>CPArray[i-1][j+1].getPosY()-boundSpace
+                                        || CPArray[i][j].getPosY()>CPArray[i+1][j+1].getPosY()-boundSpace){
                                             CPArray[i][j].setPosY(e.getY()-7);
                                             return;
                                         }
 
-                                        /** CURRENTLY WORKS, BUT MAY NEED FURTHER TESTING*/
                                         //Prevents a dot from diagonally crossing a neighbor's path
-                                        if(CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+5)+(CPArray[i-1][j].getPosY()-5))/2
-                                                || CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+5)+(CPArray[i+1][j].getPosY()-5))/2){
-                                            CPArray[i][j].setPosY(e.getY()+7);
+                                        if(CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+boundSpace)+(CPArray[i-1][j].getPosY()-boundSpace))/2
+                                        || CPArray[i][j].getPosY()<((CPArray[i][j-1].getPosY()+boundSpace)+(CPArray[i+1][j].getPosY()-boundSpace))/2){
+                                            CPArray[i][j].setPosY(e.getY()+10);
+
                                             return;
                                         }
-                                        if(CPArray[i][j].getPosY()>((CPArray[i][j+1].getPosY()-5)+(CPArray[i-1][j].getPosY()+5))/2
-                                                || CPArray[i][j].getPosY()>((CPArray[i][j+1].getPosY()-5)+(CPArray[i+1][j].getPosY()+5))/2){
+                                        if(CPArray[i][j].getPosY()>((CPArray[i][j+1].getPosY()-boundSpace-5)+(CPArray[i-1][j].getPosY()+boundSpace+5))/2
+                                        || CPArray[i][j].getPosY()>((CPArray[i][j+1].getPosY()-boundSpace-5)+(CPArray[i+1][j].getPosY()+boundSpace)+5)/2){
                                             CPArray[i][j].setPosY(e.getY()-7);
+
                                             return;
                                         }
+
 
                                         CPArray[i][j].setPosX(e.getX());
                                         CPArray[i][j].setPosY(e.getY());
@@ -301,18 +302,24 @@ public class endImageView extends JLabel {
                                         CPArray[i][j].setCurrent(true);
 
 
+
                                         redrawGrid = true;
                                         SIG.setCPArray(CPArray);
                                         SIG.setPolygons(polygons);
                                         SIG.setGridSize(gridSize);
+                                        view.compareGrid(side);
 
                                     }
+                                }
+                                else{
+                                    CPArray[i][j].setColor(color);
+                                    CPArray[i][j].setCurrent(false);
                                 }
                             }
                         }
                     }
                     repaint();
-                    endImageView.super.revalidate();
+                    myImageView.super.revalidate();
                 }
             }
 
@@ -321,7 +328,7 @@ public class endImageView extends JLabel {
     }
 
 
-    /** Changes the Intensity. (IN-PROGRESS)*/
+    //Allows use to change the intensity of the image
     public void changeIntensity(float percentage) {
 
         if (origBim == null) {
@@ -331,10 +338,7 @@ public class endImageView extends JLabel {
         int[] pixel = { 0, 0, 0, 0 };
         float[] hsbvals = { 0, 0, 0 };
 
-        /*RescaleOp op = new RescaleOp(percentage, 0, null);
-        BufferedImage bufferedImage = op.filter(originalBim, originalBim); */
 
-        // https://stackoverflow.com/questions/46797579/how-can-i-control-the-brightness-of-an-image
         for ( int i = 0; i < origBim.getHeight(); i++ ) {
             for ( int j = 0; j < origBim.getWidth(); j++ ) {
 
@@ -362,8 +366,9 @@ public class endImageView extends JLabel {
         setImage(bim);
     }
 
-    /**PART CHANGING THE COLOR INTENSITY*/
-    static public BufferedImage deepCopy(BufferedImage bi) {
+    //Copies the image into the image buffer to allow us to
+    //change the intensity of the actual image
+    static public BufferedImage copyImage(BufferedImage bi) {
         ColorModel cm = bi.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = bi.copyData(null);
@@ -371,5 +376,41 @@ public class endImageView extends JLabel {
     }
 
 
+    //Sets our array of contolpoints
+    public void setCPArray(ControlPoint[][] CPArray){
+        this.CPArray = CPArray;
 
+    }
+
+    //Returns the the default grid
+    public myImageGrid getStartGrid(){
+        return SIG;
+    }
+
+
+    //Returns an array of controlpoints
+    public ControlPoint[][] getCPArray() {
+        return CPArray;
+    }
+
+
+    //Returns the current gridsize
+    public int getGridSize(){
+        return gridSize;
+    }
+
+    //Sets the name of the file used in an instance of myImageView
+    public void setFileName(String fileName){
+        this.fileName = fileName;
+    }
+
+    //Gets the name of the file used in an instance of myImageView
+    public String getFileName(){
+        return fileName;
+    }
+
+    //Sets the current view window
+    public void setView(View view){
+        this.view = view;
+    }
 }

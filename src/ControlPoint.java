@@ -16,60 +16,79 @@ public class ControlPoint {
         this.radius = radius;
     }
 
-
-    public boolean isPrevious(){
-        return isPrevious;
-    }
-
     public boolean isCurrent(){
         return isCurrent;
     }
 
+    //Determines if a used controlpoints was the previously used point
     public void setPrevious(boolean isPrevious){
         this.isPrevious = isPrevious;
     }
+
+    //Determines if a controlpoint is the one that is currently being used
     public void setCurrent(boolean isCurrent){
         this.isCurrent = isCurrent;
     }
 
+    //Sets the color of our controlpoints
     public void setColor(Color color){
         this.color = color;
     }
 
+    //Returns the color of our controlpoints
     public Color getColor(){
         return color;
     }
 
+    //Gets the x position of our point
     public int getPosX(){
         return PosX;
     }
+
+    //Gets the y position of our point
     public int getPosY(){
         return PosY;
     }
 
+    //Sets the x position of our point
     public void setPosX(int x){
         this.PosX = x;
-    }
-    public void setPosY(int y){
-        this.PosY = y;
+        this.previewX=x;
     }
 
+    //Sets the y position of our point
+    public void setPosY(int y){
+        this.PosY = y;
+        this.previewY =y;
+    }
+
+    //Sets the X preview coordinate of our point
     public void setPreviewX(int x){
         this.previewX = x;
     }
 
+    //Sets the Y preview coordinate of our point
     public void setPreviewY(int y){
         this.previewY =y;
     }
 
+    //Returns the X preview coordinate
     public int getPreviewX(){
         return previewX;
     }
 
+    //Returns the Y preview coordinate
     public int getPreviewY(){
         return previewY;
     }
 
+    //Sets the preview coordinates of the controlpoints
+    public void setNewPreview(int x, int y){
+        this.previewX=x;
+        this.previewY=y;
+    }
+
+    //Returns the radius of the controlpoints
     public int getRadius(){
         return radius;
     }

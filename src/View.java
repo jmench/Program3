@@ -9,35 +9,50 @@ import java.io.File;
 import java.io.IOException;
 
 public class View extends JFrame {
+
+    //These buttons are used for morphing functionality
     private JButton setLeft, setRight, previewMorph, genMorph;
     private BufferedImage image;
+
+    //Determines the speed and the fps of the morphing
     private JSlider speed, fps;
-    private JSlider ControlPointSize;
     private JPanel buttonPanel, imagePanel, setPanel, sliderPanel, resPanel, morphPanel, speedPanel;
-    private startImageView startImage, morphImage;
-    private startImageView endImage;
-    private startImageGrid SIG;
-    private startImageGrid EIG;
 
-    private ControlPoint previewArr[][];
-    private startImageGrid previewGrid = new startImageGrid();
+    //Tracks the images we for image morphing
+    private myImageView startImage, morphImage, endImage;
+    private myImageGrid SIG;
+    private myImageGrid EIG;
 
+    //This variable is used to track our gridsize
     private int gridSize = 10;
+
+    //This tracks the color of our grids and control points
     private Color CPColor = Color.BLACK;
+
+    //This allows us to adjust the intensity of our start and end images
     private JSlider startIntensity, endIntensity;
-    private BufferedImage bim;
-    private Controller CTR;
+
+    //This is used to animate our control points and perform our morphing
+    private Animate CTR;
+
+    //Allows us to use the MorphTools class
     private MorphTools MT =new MorphTools();
+
+    //This stores our "tween-frames" as an array of buffered images
     public BufferedImage startFrames[];
     public BufferedImage endFrames[];
+
+    //This is where the final image is stores
     public BufferedImage finalImage;
 
+    //Allows us to interact with our morph window
     public morphWindow gui;
 
-    public View(Controller CTR){
+    public View(Animate CTR){
 
         this.CTR = CTR;
         CTR.setView(this);
+
         //This panel is used to hold our buttons
         buttonPanel = new JPanel();
 
@@ -64,14 +79,13 @@ public class View extends JFrame {
         imagePanel.setLayout(experimentLayout);
 
 
-        startImage = new startImageView(readImage("./src/boat_resized.gif"));
-        endImage = new startImageView(readImage("./src/lion.jpg"));
-       //// endImage = new endImageView(readImage("./src/boat_resized.gif"));
-        morphImage = new startImageView(readImage("./src/boat_resized.gif"));
+        startImage = new myImageView(readImage("./Pictures/eagle.jpg"));
+        endImage = new myImageView(readImage("./Pictures/lion.jpg"));
+        morphImage = new myImageView(readImage("./Pictures/eagle.jpg"));
 
-        startImage.setFileName("./src/boat_resized.gif");
-        endImage.setFileName("./src/lion.jpg");
-        morphImage.setFileName("./src/boat_resized.gif");
+        startImage.setFileName("./Pictures/eagle.jpg");
+        endImage.setFileName("./Pictures/lion.jpg");
+        morphImage.setFileName("./Pictures/eagle.jpg");
 
         startImage.setSide("Left");
         endImage.setSide("Right");
@@ -142,12 +156,13 @@ public class View extends JFrame {
             }
         });
 
+        //Allows us to choose the grid resolution
         JLabel gridRes = new JLabel("Grid Resolution");
         String[] gridStrings= {"5x5", "10x10", "20x20"};
         JComboBox gridSizes = new JComboBox(gridStrings);
         gridSizes.setSelectedIndex(1);
 
-
+        //Allows us to choose the grid color
         JLabel gridCol = new JLabel("Grid Color");
         String[] gridcols = {"Black", "Blue", "Green", "White"};
         JComboBox colors = new JComboBox(gridcols);
@@ -170,12 +185,13 @@ public class View extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), startImage);
-                CTR.startTimer();
+                CTR.startTimer(false);
                 previewMorph.setEnabled(false);
                 stopPreview.setEnabled(true);
                 resetPreview.setEnabled(false);
                 genMorph.setEnabled(false);
                 gridSizes.setEnabled(false);
+
 
             }
         });
@@ -202,14 +218,14 @@ public class View extends JFrame {
             }
         });
 
-        /**We'll use this for the GENERATE MORPH button */
+
         genMorph.addActionListener(new ActionListener() {
                                @Override
                                public void actionPerformed(ActionEvent e) {
 
                                    morph();
                                    CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), startImage);
-                                   CTR.startTimer();
+                                   CTR.startTimer(true);
                                   // morphWindow gui = new morphWindow(View.this, startImage.getImage());
                                    gui.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE); // Not exit, exit would close
                                    gui.setSize(700, 700);
@@ -260,11 +276,7 @@ public class View extends JFrame {
         setSize(1200,1000);
         setVisible(true);
 
-
-
-
-
-        final JFileChooser fc = new JFileChooser(".");
+        final JFileChooser fc = new JFileChooser("./Pictures/");
 
         gridSizes.addActionListener(new ActionListener() {
                                         @Override
@@ -376,16 +388,14 @@ public class View extends JFrame {
 
 
     //A function used to resize the buffered image
-    //Source: https://stackoverflow.com/questions/9417356/bufferedimage-resize
-    public static BufferedImage resize(BufferedImage img, double newW, double newH) {
+    public static BufferedImage resize(BufferedImage img, double newWidth, double newHeight) {
 
-        Image tmp = img.getScaledInstance((int) (img.getWidth()*newW), (int) (img.getHeight()*newH), Image.SCALE_SMOOTH);
-        BufferedImage dimg = new BufferedImage((int) (img.getWidth()*newW), (int) (img.getHeight()*newH), BufferedImage.TYPE_INT_ARGB);
+        Image tmp = img.getScaledInstance((int) (img.getWidth()*newWidth), (int) (img.getHeight()*newHeight), Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage((int) (img.getWidth()*newWidth), (int) (img.getHeight()*newHeight), BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2d = dimg.createGraphics();
         g2d.drawImage(tmp, 0, 0, null);
         g2d.dispose();
-
         return dimg;
     }
 
@@ -414,10 +424,7 @@ public class View extends JFrame {
 
     }
 
-    public void setPreviewArr(startImageGrid previewGrid){
-        this.previewGrid = previewGrid;
-    }
-
+    //This allows us to highlight a selected control point corresponding to the other grid
     public void compareGrid(String side){
         for(int i=0; i<gridSize; i++){
             for(int j=0; j<gridSize; j++){
@@ -444,64 +451,56 @@ public class View extends JFrame {
                 }
             }
         }
-
-      /*  for(int i=0; i<gridSize; i++){
-            for(int j=0; j<gridSize; j++) {
-                if (endImage.getCPArray()[i][j].isCurrent()) {
-                    startImage.getCPArray()[i][j].setCurrent(true);
-                    startImage.setNewColor(i, j, Color.RED);
-                } else {
-                    startImage.getCPArray()[i][j].setCurrent(false);
-                    startImage.setNewColor(i, j, Color.BLACK);
-                }
-            }}*/
     }
 
+    //This is used to start applying our morph
     public void startMorph(int fps, int frames){
-        startImageGrid start = SIG;
-        previewGrid = SIG;
-        morphImage.setCPArray(SIG.getCPArray());
-        startImageGrid end = EIG;
+        myImageView start = startImage;
 
+        morphImage.setCPArray(endImage.getCPArray());
+        myImageView end = endImage;
 
         for(int x=0; x<gridSize; x++){
             for(int y=0; y<gridSize; y++){
-                double x1 = previewGrid.getCPArray()[x][y].getPosX();
-                double y1= previewGrid.getCPArray()[x][y].getPosY();
+
+                double x1 = morphImage.getCPArray()[x][y].getPosX();
+                double y1= morphImage.getCPArray()[x][y].getPosY();
+
                 double x2 = end.getCPArray()[x][y].getPosX();
                 double y2 = end.getCPArray()[x][y].getPosY();
 
-                double i = ((fps*((x2-x1)/frames)))+x1;
+               double i = ((fps*((x2-x1)/frames)))+x1;
                 double j = ((fps*(y2-y1)/frames))+y1;
-                //morphImage.getCPArray()[x][y].setPosX((int)i);
-                //morphImage.getCPArray()[x][y].setPosY((int)j);
+                morphImage.getCPArray()[x][y].setPosX((int)i);
+                morphImage.getCPArray()[x][y].setPosY((int)j);
             }
         }
 
         for(int x=0; x<gridSize-1; x++){
             for(int y=0; y<gridSize-1; y++){
 
+                //These points are used to begin applying our image morphing
+                    //using MorphTools
+                int sx1 = startImage.getCPArray()[x][y].getPosX();
+                int sy1 = startImage.getCPArray()[x][y].getPosY();
+                int sx4 = startImage.getCPArray()[x][y+1].getPosX();
+                int sy4 = startImage.getCPArray()[x][y+1].getPosY();
+                int sx2 = startImage.getCPArray()[x+1][y].getPosX();
+                int sy2 = startImage.getCPArray()[x+1][y].getPosY();
+                int sx3 = startImage.getCPArray()[x+1][y+1].getPosX();
+                int sy3 = startImage.getCPArray()[x+1][y+1].getPosY();
 
-                int sx1 = start.getCPArray()[x][y].getPosX();
-                int sy1 = start.getCPArray()[x][y].getPosY();
-                int sx4 = start.getCPArray()[x][y+1].getPosX();
-                int sy4 = start.getCPArray()[x][y+1].getPosY();
-                int sx2 = start.getCPArray()[x+1][y].getPosX();
-                int sy2 = start.getCPArray()[x+1][y].getPosY();
-                int sx3 = start.getCPArray()[x+1][y+1].getPosX();
-                int sy3 = start.getCPArray()[x+1][y+1].getPosY();
-
-                int dx1 = previewGrid.getCPArray()[x][y].getPosX();
-                int dy1 = previewGrid.getCPArray()[x][y].getPosY();
-                int dx4 = previewGrid.getCPArray()[x][y+1].getPosX();
-                int dy4 = previewGrid.getCPArray()[x][y+1].getPosY();
-                int dx2 = previewGrid.getCPArray()[x+1][y].getPosX();
-                int dy2 = previewGrid.getCPArray()[x+1][y].getPosY();
-                int dx3 = previewGrid.getCPArray()[x+1][y+1].getPosX();
-                int dy3 = previewGrid.getCPArray()[x+1][y+1].getPosY();
+                int dx1 = morphImage.getCPArray()[x][y].getPosX();
+                int dy1 = morphImage.getCPArray()[x][y].getPosY();
+                int dx4 = morphImage.getCPArray()[x][y+1].getPosX();
+                int dy4 = morphImage.getCPArray()[x][y+1].getPosY();
+                int dx2 = morphImage.getCPArray()[x+1][y].getPosX();
+                int dy2 = morphImage.getCPArray()[x+1][y].getPosY();
+                int dx3 = morphImage.getCPArray()[x+1][y+1].getPosX();
+                int dy3 = morphImage.getCPArray()[x+1][y+1].getPosY();
 
 
-                if (((x == gridSize-1) && (y == 1)) || ((x == 1) && (y == gridSize-1))) {
+                if (((x == gridSize-2) && (y == 1)) || ((x == 1) && (y == gridSize-2))) {
 
                     Triangle S = new Triangle(sx1, sy1, sx2, sy2, sx4, sy4);
                     Triangle D = new Triangle(dx1, dy1, dx2, dy2, dx4, dy4);
@@ -523,11 +522,7 @@ public class View extends JFrame {
                 }
             }
         }
-
-
         morphImage.repaint();
-       // gui.setImage(morphImage.getImage());
-        //gui.repaint();
     }
 
     public void showMorph(int fps, int frames){
@@ -547,6 +542,7 @@ public class View extends JFrame {
         g2.setComposite(AlphaComposite.SrcOver.derive((float) fps / frames));
         g2.drawImage(endFrame, 0, 0, this);
 
+        //Here, we store each "tween-frame" into a results folder
         File outputFile = new File("./MorphResults/Frame" + fps + ".jpg");
         try {
             ImageIO.write(finalImage, "jpg", outputFile);
@@ -555,13 +551,15 @@ public class View extends JFrame {
         }
         morphImage.setImage(finalImage);
         gui.setImage(finalImage);
-        //gui.repaint();
     }
 
-    public void morph(){
-        /**NEEDS TO BE frames*seconds */
-        int FPS = fps.getValue()*speed.getValue();
 
+    //This begins our morph sequence with the given speed and fps
+    //provided by our "speed" and "fps" sliders
+    public void morph(){
+
+        int FPS = fps.getValue()*speed.getValue();
+        System.out.println(FPS);
         startFrames = new BufferedImage[FPS];
         endFrames = new BufferedImage[FPS];
 
@@ -569,22 +567,21 @@ public class View extends JFrame {
 
         for(int i=0; i<endFrames.length; i++){
             startMorph(i, FPS);
-            endFrames[i] = startImageView.deepCopy(morphImage.getImage());
+            endFrames[i] = myImageView.copyImage(morphImage.getImage());
 
         }
-
-        /** morphImageView.resetPreviewControlPoints(); */
 
         morphImage = copyMorphImage(startImage.getFileName());
 
         for(int i=0; i<startFrames.length; i++){
             startMorph(i, FPS);
-            startFrames[i] = startImageView.deepCopy(morphImage.getImage());
+            startFrames[i] = myImageView.copyImage(morphImage.getImage());
 
         }
 
     }
 
+    //This clear our image buffer and our morph window
     public void resetFinalImage(){
         finalImage = new BufferedImage(startImage.getWidth(), startImage.getHeight(), BufferedImage.TYPE_INT_RGB);
         morphImage.setImage(finalImage);
@@ -593,21 +590,20 @@ public class View extends JFrame {
         CTR.stopTimer();
     }
 
+    //Returns the current value of the speed slider
     public int getSeconds(){
         return speed.getValue();
     }
 
+    //Returns the current value of our fps slider
     public int getFPS(){
         return fps.getValue();
     }
 
 
-    private startImageView copyMorphImage(String file) {
-        /**CHANGE THIS AND MAKE IT MORE DYNAMIC */////
-        return new startImageView(readImage(file));
+    //Reads the current morph image
+    private myImageView copyMorphImage(String file) {
+        return new myImageView(readImage(file));
     }
-
-
-
 
 }

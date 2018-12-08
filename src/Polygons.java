@@ -10,10 +10,12 @@ public class Polygons extends JComponent {
         this.y_array = y_array;
     }
 
+    //Returns an array of X coordinates
     public int[] getXarray(){
         return x_array;
     }
 
+    //Returns an array of Y coordinates
     public int[] getYarray(){
         return y_array;
     }

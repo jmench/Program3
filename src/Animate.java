@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
-public class Controller  {
+public class Animate  {
     private int frameCtr =0;
     private int seconds =0;
     private int fps =0;
@@ -14,17 +14,14 @@ public class Controller  {
     private  ControlPoint[][] endCPArr ;
     private  ControlPoint[][] morphCPArr;
     private  ControlPoint[][] origCPArr;
-    private startImageView SV;
+    private myImageView SV;
     private boolean runMorph =false;
 
-
-    public Controller(){
+//Allows us to animate our controlpoints and control the speed of our morphing
+    public Animate(){
             fps=0;
             time=0;
 
-        /**The value was originally left at '1' (instead of 1000), so
-         * this we need to be readjusted for a consisten FPS rate
-         */
         timer = new Timer(1, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frameCtr = view.getFPS();
@@ -32,30 +29,25 @@ public class Controller  {
                 if(time% (1000/frameCtr)==0){
                     fps++;
 
-                    view.startMorph(fps, frameCtr);
+                    if(runMorph) {
+                        view.startMorph(fps, frameCtr);
 
-                   view.showMorph(fps, seconds*frameCtr);
-                   redraw();
-                   // origGridRedraw();
+                        view.showMorph(fps, seconds * frameCtr);
+                    }
+                    else {
+                        redraw();
+                    }
 
                 }
 
                 if(fps== seconds*frameCtr){
-                  //  timer.stop();
+                    timer.stop();
                 }
 
-
-              /*  if(flag){
-                    origGridRedraw();
-                }
-                else {
-                    redraw();
-                }*/
                 time++;
             }
         });
 
-      //  timer.start();
 
 
 
@@ -64,18 +56,24 @@ public class Controller  {
 
     }
 
-    public void setArrays(ControlPoint startArr[][], ControlPoint endArr[][], startImageView SV){
+    //Sets the arrays of the startImage grid and the endImage grid
+    public void setArrays(ControlPoint startArr[][], ControlPoint endArr[][], myImageView SV){
         this.SV =SV;
         this.endCPArr=endArr;
         this.morphCPArr= startArr;
         this.origCPArr = startArr;
     }
 
-    public void startTimer(){
+    //Starts the timer for animation and morphing functionality
+    public void startTimer(boolean runMorph){
         timer.start();
-        runMorph=true;
+        if(runMorph) {
+            this.runMorph = runMorph;
+        }
     }
 
+    //Redraws the startImage grid to ensure that it matches
+    //the endImage grid
     public void redraw(){
         for(int i=1; i<SV.getGridSize(); i++){
             for(int j=1; j<SV.getGridSize(); j++){
@@ -98,6 +96,7 @@ public class Controller  {
 
     }
 
+    //DOES NOT WORK---- INTENDED USE: To reset the controlpoints when the "reset preview" button is pressed
     public void origGridRedraw(){
         for(int i=1; i<SV.getGridSize(); i++){
             for(int j=1; j<SV.getGridSize(); j++){
@@ -117,10 +116,12 @@ public class Controller  {
 
     }
 
+    //Sets the current view window
     public void setView(View view){
         this.view = view;
     }
 
+    //Allows us to stop the timer
     public void stopTimer(){
         timer.stop();
         runMorph=false;

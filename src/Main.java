@@ -1,5 +1,5 @@
 /*
-Program 3
+Program 4
 CS335
 Partners: Jordan Menchen & Malik Conner
 */
@@ -13,9 +13,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Controller c = new Controller();
-        View v = new View(c);
-        //v.JMorph();
+        Animate a = new Animate();
+        View v = new View(a);
         v.addWindowListener(
                 new WindowAdapter() {
                     public void windowClosing(WindowEvent e) {
