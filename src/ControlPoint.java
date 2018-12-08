@@ -62,6 +62,14 @@ public class ControlPoint {
         this.previewY =y;
     }
 
+    public int getPreviewX(){
+        return previewX;
+    }
+
+    public int getPreviewY(){
+        return previewY;
+    }
+
     public int getRadius(){
         return radius;
     }

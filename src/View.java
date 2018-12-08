@@ -69,6 +69,16 @@ public class View extends JFrame {
        //// endImage = new endImageView(readImage("./src/boat_resized.gif"));
         morphImage = new startImageView(readImage("./src/boat_resized.gif"));
 
+        startImage.setFileName("./src/boat_resized.gif");
+        endImage.setFileName("./src/lion.jpg");
+        morphImage.setFileName("./src/boat_resized.gif");
+
+        startImage.setSide("Left");
+        endImage.setSide("Right");
+
+        startImage.setView(this);
+        endImage.setView(this);
+
         gui = new morphWindow(View.this, startImage.getImage());
         gui.setView(this);
 
@@ -164,7 +174,8 @@ public class View extends JFrame {
                 previewMorph.setEnabled(false);
                 stopPreview.setEnabled(true);
                 resetPreview.setEnabled(false);
-                setComponentState(false);
+                genMorph.setEnabled(false);
+                gridSizes.setEnabled(false);
 
             }
         });
@@ -176,6 +187,8 @@ public class View extends JFrame {
                 previewMorph.setEnabled(true);
                 stopPreview.setEnabled(false);
                 resetPreview.setEnabled(true);
+                genMorph.setEnabled(true);
+                gridSizes.setEnabled(true);
 
             }
         });
@@ -183,8 +196,9 @@ public class View extends JFrame {
         resetPreview.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //CTR = new Controller(SIG.getCPArray(), EIG.getCPArray(), View.this);
+                CTR.setArrays(SIG.getCPArray(), EIG.getCPArray(), startImage);
                 CTR.origGridRedraw();
+
             }
         });
 
@@ -302,6 +316,7 @@ public class View extends JFrame {
         setLeft.addActionListener(
                 new ActionListener() {
                     public void actionPerformed (ActionEvent e) {
+
                         int returnVal = fc.showOpenDialog(View.this);
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             File file = fc.getSelectedFile();
@@ -317,6 +332,9 @@ public class View extends JFrame {
 
                             //Here we display the image in it's panel
                             startImage.setOrigImage(image);
+                            startImage.setFileName(file.toString());
+                            morphImage.setOrigImage(image);
+                            morphImage.setFileName(file.toString());
 
                            startImage.showImage();
 
@@ -324,6 +342,7 @@ public class View extends JFrame {
                             startImage.addGrid(gridSize);
 
                             gui.setImage(image);
+                            setSize(getWidth()+1,getHeight());
                         }
                     }
                 }
@@ -345,17 +364,17 @@ public class View extends JFrame {
 
                             } catch (IOException e1){};
                             endImage.setOrigImage(image);
+                            endImage.setFileName(file.toString());
                             endImage.showImage();
                             endImage.addGrid(gridSize);
+                            setSize(getWidth()+1,getHeight());
                         }
                     }
                 }
         );
     }
 
-    public void setComponentState(boolean state){
 
-    }
     //A function used to resize the buffered image
     //Source: https://stackoverflow.com/questions/9417356/bufferedimage-resize
     public static BufferedImage resize(BufferedImage img, double newW, double newH) {
@@ -380,6 +399,7 @@ public class View extends JFrame {
     public BufferedImage readImage (String file) {
 
         Image image = Toolkit.getDefaultToolkit().getImage(file);
+
         MediaTracker tracker = new MediaTracker (new Component () {});
         tracker.addImage(image, 0);
         try { tracker.waitForID (0); }
@@ -389,16 +409,52 @@ public class View extends JFrame {
                         BufferedImage.TYPE_INT_RGB);
         Graphics2D big = bim.createGraphics();
         big.drawImage (image, 0, 0, this);
+
         return bim;
 
-    }
-
-    public BufferedImage getImage() {
-        return bim;
     }
 
     public void setPreviewArr(startImageGrid previewGrid){
         this.previewGrid = previewGrid;
+    }
+
+    public void compareGrid(String side){
+        for(int i=0; i<gridSize; i++){
+            for(int j=0; j<gridSize; j++){
+
+                if(side.equals("Left")){
+                if(startImage.getCPArray()[i][j].isCurrent()){
+                        endImage.getCPArray()[i][j].setCurrent(true);
+                        endImage.setNewColor(i, j, Color.RED);
+                    }
+                    else{
+                        endImage.getCPArray()[i][j].setCurrent(false);
+                        endImage.setNewColor(i,j, Color.BLACK);
+                    }
+            }
+            else if(side.equals("Right")){
+                    if(endImage.getCPArray()[i][j].isCurrent()){
+                        startImage.getCPArray()[i][j].setCurrent(true);
+                        startImage.setNewColor(i, j, Color.RED);
+                    }
+                    else{
+                        startImage.getCPArray()[i][j].setCurrent(false);
+                        startImage.setNewColor(i,j, Color.BLACK);
+                    }
+                }
+            }
+        }
+
+      /*  for(int i=0; i<gridSize; i++){
+            for(int j=0; j<gridSize; j++) {
+                if (endImage.getCPArray()[i][j].isCurrent()) {
+                    startImage.getCPArray()[i][j].setCurrent(true);
+                    startImage.setNewColor(i, j, Color.RED);
+                } else {
+                    startImage.getCPArray()[i][j].setCurrent(false);
+                    startImage.setNewColor(i, j, Color.BLACK);
+                }
+            }}*/
     }
 
     public void startMorph(int fps, int frames){
@@ -417,8 +473,8 @@ public class View extends JFrame {
 
                 double i = ((fps*((x2-x1)/frames)))+x1;
                 double j = ((fps*(y2-y1)/frames))+y1;
-                morphImage.getCPArray()[x][y].setPosX((int)i);
-                morphImage.getCPArray()[x][y].setPosY((int)j);
+                //morphImage.getCPArray()[x][y].setPosX((int)i);
+                //morphImage.getCPArray()[x][y].setPosY((int)j);
             }
         }
 
@@ -428,21 +484,21 @@ public class View extends JFrame {
 
                 int sx1 = start.getCPArray()[x][y].getPosX();
                 int sy1 = start.getCPArray()[x][y].getPosY();
-                int sx2 = start.getCPArray()[x][y+1].getPosX();
-                int sy2 = start.getCPArray()[x][y+1].getPosY();
-                int sx3 = start.getCPArray()[x+1][y].getPosX();
-                int sy3 = start.getCPArray()[x+1][y].getPosY();
-                int sx4 = start.getCPArray()[x+1][y+1].getPosX();
-                int sy4 = start.getCPArray()[x+1][y+1].getPosY();
+                int sx4 = start.getCPArray()[x][y+1].getPosX();
+                int sy4 = start.getCPArray()[x][y+1].getPosY();
+                int sx2 = start.getCPArray()[x+1][y].getPosX();
+                int sy2 = start.getCPArray()[x+1][y].getPosY();
+                int sx3 = start.getCPArray()[x+1][y+1].getPosX();
+                int sy3 = start.getCPArray()[x+1][y+1].getPosY();
 
                 int dx1 = previewGrid.getCPArray()[x][y].getPosX();
                 int dy1 = previewGrid.getCPArray()[x][y].getPosY();
-                int dx2 = previewGrid.getCPArray()[x][y+1].getPosX();
-                int dy2 = previewGrid.getCPArray()[x][y+1].getPosY();
-                int dx3 = previewGrid.getCPArray()[x+1][y].getPosX();
-                int dy3 = previewGrid.getCPArray()[x+1][y].getPosY();
-                int dx4 = previewGrid.getCPArray()[x+1][y+1].getPosX();
-                int dy4 = previewGrid.getCPArray()[x+1][y+1].getPosY();
+                int dx4 = previewGrid.getCPArray()[x][y+1].getPosX();
+                int dy4 = previewGrid.getCPArray()[x][y+1].getPosY();
+                int dx2 = previewGrid.getCPArray()[x+1][y].getPosX();
+                int dy2 = previewGrid.getCPArray()[x+1][y].getPosY();
+                int dx3 = previewGrid.getCPArray()[x+1][y+1].getPosX();
+                int dy3 = previewGrid.getCPArray()[x+1][y+1].getPosY();
 
 
                 if (((x == gridSize-1) && (y == 1)) || ((x == 1) && (y == gridSize-1))) {
@@ -467,15 +523,19 @@ public class View extends JFrame {
                 }
             }
         }
+
+
         morphImage.repaint();
+       // gui.setImage(morphImage.getImage());
+        //gui.repaint();
     }
 
     public void showMorph(int fps, int frames){
-       BufferedImage startFrame= startImage.getImage();
-       BufferedImage endFrame = endImage.getImage();
-         //startFrame = startFrames[frames-1];
-         //endFrame = endFrames[frames - fps];
-        finalImage = new BufferedImage(startFrame.getWidth(), startFrame.getHeight(), BufferedImage.TYPE_INT_RGB);
+       //BufferedImage startFrame= startImage.getImage();
+       //BufferedImage endFrame = endImage.getImage();
+         BufferedImage startFrame = startFrames[frames-1];
+         BufferedImage endFrame = endFrames[frames - fps];
+        BufferedImage finalImage = new BufferedImage(startFrame.getWidth(), startFrame.getHeight(), BufferedImage.TYPE_INT_RGB);
 
 
         Graphics g = finalImage.getGraphics();
@@ -493,32 +553,32 @@ public class View extends JFrame {
         } catch (IOException e) {
             System.out.println("Error Saving Morph Frame");
         }
-
         morphImage.setImage(finalImage);
         gui.setImage(finalImage);
-        gui.repaint();
+        //gui.repaint();
     }
 
     public void morph(){
         /**NEEDS TO BE frames*seconds */
-        int fps = 30*3;
+        int FPS = fps.getValue()*speed.getValue();
 
-        startFrames = new BufferedImage[fps];
-        endFrames = new BufferedImage[fps];
+        startFrames = new BufferedImage[FPS];
+        endFrames = new BufferedImage[FPS];
 
-        morphImage = copyMorphImage(endImage);
+        morphImage = copyMorphImage(endImage.getFileName());
 
         for(int i=0; i<endFrames.length; i++){
-            startMorph(i, fps);
+            startMorph(i, FPS);
             endFrames[i] = startImageView.deepCopy(morphImage.getImage());
 
         }
 
         /** morphImageView.resetPreviewControlPoints(); */
 
-        morphImage = copyMorphImage(startImage);
+        morphImage = copyMorphImage(startImage.getFileName());
+
         for(int i=0; i<startFrames.length; i++){
-            startMorph(i, fps);
+            startMorph(i, FPS);
             startFrames[i] = startImageView.deepCopy(morphImage.getImage());
 
         }
@@ -542,9 +602,9 @@ public class View extends JFrame {
     }
 
 
-    private startImageView copyMorphImage(startImageView image) {
+    private startImageView copyMorphImage(String file) {
         /**CHANGE THIS AND MAKE IT MORE DYNAMIC */////
-        return new startImageView(readImage("./src/boat_resized.gif"));
+        return new startImageView(readImage(file));
     }
 
 

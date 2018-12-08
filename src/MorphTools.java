@@ -7,7 +7,7 @@ public class MorphTools
 
     public MorphTools() {}
 
-    public static void warpTriangle(
+    public  void warpTriangle(
         BufferedImage src,
         BufferedImage dest,
         Triangle S,
@@ -86,7 +86,7 @@ public class MorphTools
         g2.dispose();
     }
 
-    private static void Gauss(int n, double[][] a, int[] l)
+    private  void Gauss(int n, double[][] a, int[] l)
     {
         /****************************************************
             a is a n x n matrix and l is an int array of length n
@@ -129,7 +129,7 @@ public class MorphTools
         }
     }
 
-    private static void solve(
+    private void solve(
         int n, double[][] a, int[] l, double[] b, double[] x)
     {
         /*********************************************************

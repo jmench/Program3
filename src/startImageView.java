@@ -16,6 +16,9 @@ public class startImageView extends JLabel {
     private startImageGrid SIG = new startImageGrid();
     private Controller CTR;
     private Color color;
+    private String fileName;
+    private View view;
+    private String side;
 
 
     // instance variable to hold the buffered image
@@ -77,6 +80,14 @@ public class startImageView extends JLabel {
         this.repaint();
     }
 
+    public void setNewColor(int x, int y, Color color){
+        CPArray[x][y].setColor(color);
+        redrawGrid=true;
+        repaint();
+    }
+
+
+
     // accessor to get a handle to the bufferedimage object stored here
     public BufferedImage getImage() {
         return bim;
@@ -87,6 +98,11 @@ public class startImageView extends JLabel {
         if (bim == null) return;
         showfiltered=false;
         this.repaint();
+    }
+
+
+    public void setSide(String side){
+        this.side = side;
     }
 
     //  get a graphics context and show either filtered image or
@@ -296,11 +312,12 @@ public class startImageView extends JLabel {
                                         CPArray[i][j].setCurrent(true);
 
 
+
                                         redrawGrid = true;
                                         SIG.setCPArray(CPArray);
                                         SIG.setPolygons(polygons);
                                         SIG.setGridSize(gridSize);
-
+                                        view.compareGrid(side);
 
                                     }
                                 }
@@ -370,11 +387,6 @@ public class startImageView extends JLabel {
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
-
-    public void setPolygons(Polygons[][] polygons){
-        this.polygons = polygons;
-    }
-
     public void setCPArray(ControlPoint[][] CPArray){
         this.CPArray = CPArray;
 
@@ -384,21 +396,25 @@ public class startImageView extends JLabel {
         return SIG;
     }
 
-    public Polygons[][] getPolygons(){
-        return polygons;
-    }
 
     public ControlPoint[][] getCPArray() {
         return CPArray;
     }
 
-    public void setGridSize(int gridSize){
-        this.gridSize = gridSize;
-    }
 
     public int getGridSize(){
         return gridSize;
     }
 
+    public void setFileName(String fileName){
+        this.fileName = fileName;
+    }
 
+    public String getFileName(){
+        return fileName;
+    }
+
+    public void setView(View view){
+        this.view = view;
+    }
 }

@@ -13,7 +13,7 @@ public class Controller  {
     private View view;
     private  ControlPoint[][] endCPArr ;
     private  ControlPoint[][] morphCPArr;
-    private  ControlPoint[][] origArr;
+    private  ControlPoint[][] origCPArr;
     private startImageView SV;
     private boolean runMorph =false;
 
@@ -35,12 +35,13 @@ public class Controller  {
                     view.startMorph(fps, frameCtr);
 
                    view.showMorph(fps, seconds*frameCtr);
-                    redraw();
+                   redraw();
+                   // origGridRedraw();
 
                 }
 
                 if(fps== seconds*frameCtr){
-                    timer.stop();
+                  //  timer.stop();
                 }
 
 
@@ -67,7 +68,7 @@ public class Controller  {
         this.SV =SV;
         this.endCPArr=endArr;
         this.morphCPArr= startArr;
-        this.origArr = startArr;
+        this.origCPArr = startArr;
     }
 
     public void startTimer(){
@@ -78,6 +79,8 @@ public class Controller  {
     public void redraw(){
         for(int i=1; i<SV.getGridSize(); i++){
             for(int j=1; j<SV.getGridSize(); j++){
+                morphCPArr[i][j].setPreviewX(morphCPArr[i][j].getPosX());
+                morphCPArr[i][j].setPreviewY(morphCPArr[i][j].getPosY());
                 int dx,dy;
                 int x1 = morphCPArr[i][j].getPosX();
                 int x2 = endCPArr[i][j].getPosX();
@@ -100,15 +103,15 @@ public class Controller  {
             for(int j=1; j<SV.getGridSize(); j++){
                 int dx,dy;
                 int x1 = morphCPArr[i][j].getPosX();
-                int x2 = origArr[i][j].getPosX();
+                int x2 = origCPArr[i][j].getPosX();
                 int y1 = morphCPArr[i][j].getPosY();
-                int y2 =origArr[i][j].getPosY();
+                int y2 =origCPArr[i][j].getPosY();
                 if(x1!=x2 && y1!=y2){
                     dx = x1 +(10*(x2-x1)/40);
                     dy = y1 + (10*(y2-y1)/40);
                     this.morphCPArr[i][j] = new ControlPoint(dx,dy,5);
                 }
-               // SV.repaint();
+                SV.repaint();
             }
         }
 
